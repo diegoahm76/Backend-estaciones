@@ -1,6 +1,7 @@
 import pyodbc  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
 import psycopg2  # importar el módulo psycopg2 para conectarse a la base de datos PostgreSQL
 import os
+from estaciones.utlls_send import send_email, send_sms
 
 # Conexión a SQL Server
 def connect_to_sql_server():
@@ -11,6 +12,73 @@ def conn_postgresq():
     return psycopg2.connect(host=os.environ['BIA_ESTACIONES_HOST'], port=os.environ['BIA_ESTACIONES_PORT'],
                             database=os.environ['BIA_ESTACIONES_NAME'], user=os.environ['BIA_ESTACIONES_USER'],
                             password=os.environ['BIA_ESTACIONES_PASSWORD'])
+
+def envio_alertas(data):
+
+    conn_postgresql = conn_postgresq()
+    cursor = conn_postgresql.cursor()
+
+    query_parametros= 'SELECT "T902frecuenciaSolicitudDatos", "T902temperaturaAmbienteMax", "T902temperaturaAmbienteMin", "T902humedadAmbienteMax", "T902humedadAmbienteMin", "T902presionBarometricaMax", "T902presionBarometricaMin", "T902velocidadVientoMax", "T902velocidadVientoMin", "T902direccionVientoMax", "T902direccionVientoMin", "T902precipitacionMax", "T902precipitacionMin", "T902luminosidadMax", "T902luminosidadMin", "T902nivelAguaMax", "T902nivelAguaMin", "T902velocidadAguaMax", "T902velocidadAguaMin", "T902Id_Estacion" FROM "T902ParametrosReferencia";'
+    cursor.execute(query_parametros)  # Ejecutar una consulta SQL a la tabla  T902ParametrosReferencia
+    resultado_parametrps= cursor.fetchall()
+
+    query_personas = 'SELECT "T904IdPersonaEstaciones", "T904primerNombre", "T904PrimerApellido", "T904emailNotificacion", "T904nroCelularNotificacion", "T905Id_Estacion" FROM "T904PersonasEstaciones" JOIN "T905PersonasEstaciones_Estacion" ON "T905PersonasEstaciones_Estacion"."T905Id_PersonaEstaciones" = "T904PersonasEstaciones"."T904IdPersonaEstaciones";'
+    cursor.execute(query_personas) # Ejecutar una consulta SQL a la tabla  T904PersonasEstaciones
+    resultado_personas = cursor.fetchall()
+
+    query_conf_alarma = 'SELECT "T906nombreVariableAlarma", "T906mensajeAlarmaMaximo", "T906mensajeAlarmaMinimo", "T906mensajeNoAlarma", "T906frecuenciaAlarma" FROM "T906ConfiguracionAlertasPersonas";'
+    cursor.execute(query_conf_alarma)  # Ejecutar una consulta SQL a la tabla  T906ConfiguracionAlertasPersonas
+    resultado_conf_alarma = cursor.fetchall()
+
+    for registro in data:
+        estacion = registro[10]
+        parametro_estacion = [parametros for parametros in resultado_parametrps if parametros[19] == estacion]
+        personas = [persona for persona in resultado_personas if persona[5] == estacion]
+
+        # VALIDAR SI GENERAR ALERTA TEMPERATURA
+        conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'TMP']
+        if registro[1] < parametro_estacion[0][2]:
+            mensaje_min = conf_alarma_tmp[0][2]
+            # estructura HTML para el mensaje
+            mensaje_html = f"""
+                <html>
+                    <head></head>
+                    <body>
+                        <h1>Alerta de temperatura</h1>
+                        <p>La temperatura superó el límite mínimo: {mensaje_min}</p>
+                    </body>
+                </html>
+            """
+            Asunto=  'Alarma temperatura'
+            
+            for persona in personas:
+                # send_sms(persona[4],mensaje_min)
+                print("PERSONA: ", persona)
+                print("MSG: ", mensaje_min)
+                data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+                send_email(data)
+                
+
+        elif registro[1] > parametro_estacion[0][1]:
+            mensaje_max = conf_alarma_tmp[0][1]
+            for persona in personas:
+                #print("PERSONA: ", persona)
+                #print("MSG: ", mensaje_max)
+                send_sms(persona[4],mensaje_max)
+
+                data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+                send_email(data)
+        else:
+            # mensaje_no = conf_alarma_tmp[0][3]
+            # for persona in personas:
+            #     send_sms(persona[4],mensaje_no)
+
+            #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+            #     send_email(data)
+            pass
+        
+
+    return "Envio exitoso"
 
 def get_data_from_sql_server_estaciones():
 
@@ -231,3 +299,21 @@ def transfer_data():
 
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
+
+
+# PRUEBA
+
+def get_data_from_postgresql():
+
+       # Conectarse a la base de datos SQL Server
+        conn_sql_server = conn_postgresq()
+        cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
+        # Ejecutar una consulta SQL
+        cursor.execute(
+            'SELECT "T901fechaRegistro", "T901temperaturaAmbiente", "T901humedadAmbiente", "T901presionBarometrica", "T901velocidadViento", "T901direccionViento", "T901precipitacion", "T901luminosidad", "T901nivelAgua", "T901velocidadAgua", "T901Id_Estacion" FROM public."T901Datos";')
+        # Recuperar todos los resultados de la consulta
+        datos_data = cursor.fetchall()
+        envio_alertas(datos_data)
+        return True
+        print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
+        return False
