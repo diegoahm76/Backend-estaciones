@@ -4,69 +4,97 @@ import os
 from estaciones.utlls_send import send_email, send_sms
 
 # Conexión a SQL Server
+
+
 def connect_to_sql_server():
     return pyodbc.connect(os.environ['MSSQL_DB_INFO'])
 
 # Conexión a PostgreSQL
+
+
 def conn_postgresq():
     return psycopg2.connect(host=os.environ['BIA_ESTACIONES_HOST'], port=os.environ['BIA_ESTACIONES_PORT'],
                             database=os.environ['BIA_ESTACIONES_NAME'], user=os.environ['BIA_ESTACIONES_USER'],
                             password=os.environ['BIA_ESTACIONES_PASSWORD'])
 
+
 def envio_alertas(data):
 
     conn_postgresql = conn_postgresq()
     cursor = conn_postgresql.cursor()
+    query_estacion = 'SELECT "T900IdEstacion", "T900nombreEstacion" FROM "T900Estaciones";'
+    cursor.execute(query_estacion)
+    resultado_estacion = cursor.fetchall()
 
-    query_parametros= 'SELECT "T902frecuenciaSolicitudDatos", "T902temperaturaAmbienteMax", "T902temperaturaAmbienteMin", "T902humedadAmbienteMax", "T902humedadAmbienteMin", "T902presionBarometricaMax", "T902presionBarometricaMin", "T902velocidadVientoMax", "T902velocidadVientoMin", "T902direccionVientoMax", "T902direccionVientoMin", "T902precipitacionMax", "T902precipitacionMin", "T902luminosidadMax", "T902luminosidadMin", "T902nivelAguaMax", "T902nivelAguaMin", "T902velocidadAguaMax", "T902velocidadAguaMin", "T902Id_Estacion" FROM "T902ParametrosReferencia";'
-    cursor.execute(query_parametros)  # Ejecutar una consulta SQL a la tabla  T902ParametrosReferencia
-    resultado_parametrps= cursor.fetchall()
+    query_parametros = 'SELECT "T902frecuenciaSolicitudDatos", "T902temperaturaAmbienteMax", "T902temperaturaAmbienteMin", "T902humedadAmbienteMax", "T902humedadAmbienteMin", "T902presionBarometricaMax", "T902presionBarometricaMin", "T902velocidadVientoMax", "T902velocidadVientoMin", "T902direccionVientoMax", "T902direccionVientoMin", "T902precipitacionMax", "T902precipitacionMin", "T902luminosidadMax", "T902luminosidadMin", "T902nivelAguaMax", "T902nivelAguaMin", "T902velocidadAguaMax", "T902velocidadAguaMin", "T902Id_Estacion" FROM "T902ParametrosReferencia";'
+    # Ejecutar una consulta SQL a la tabla  T902ParametrosReferencia
+    cursor.execute(query_parametros)
+    resultado_parametrps = cursor.fetchall()
 
     query_personas = 'SELECT "T904IdPersonaEstaciones", "T904primerNombre", "T904PrimerApellido", "T904emailNotificacion", "T904nroCelularNotificacion", "T905Id_Estacion" FROM "T904PersonasEstaciones" JOIN "T905PersonasEstaciones_Estacion" ON "T905PersonasEstaciones_Estacion"."T905Id_PersonaEstaciones" = "T904PersonasEstaciones"."T904IdPersonaEstaciones";'
-    cursor.execute(query_personas) # Ejecutar una consulta SQL a la tabla  T904PersonasEstaciones
+    # Ejecutar una consulta SQL a la tabla  T904PersonasEstaciones
+    cursor.execute(query_personas)
     resultado_personas = cursor.fetchall()
 
     query_conf_alarma = 'SELECT "T906nombreVariableAlarma", "T906mensajeAlarmaMaximo", "T906mensajeAlarmaMinimo", "T906mensajeNoAlarma", "T906frecuenciaAlarma" FROM "T906ConfiguracionAlertasPersonas";'
-    cursor.execute(query_conf_alarma)  # Ejecutar una consulta SQL a la tabla  T906ConfiguracionAlertasPersonas
+    # Ejecutar una consulta SQL a la tabla  T906ConfiguracionAlertasPersonas
+    cursor.execute(query_conf_alarma)
     resultado_conf_alarma = cursor.fetchall()
 
     for registro in data:
         estacion = registro[10]
-        parametro_estacion = [parametros for parametros in resultado_parametrps if parametros[19] == estacion]
-        personas = [persona for persona in resultado_personas if persona[5] == estacion]
+        parametro_estacion = [
+            parametros for parametros in resultado_parametrps if parametros[19] == estacion]
+        personas = [
+            persona for persona in resultado_personas if persona[5] == estacion]
+        estacion_result = [estaciones for estaciones in resultado_estacion if estaciones[0]==estacion]
 
         # VALIDAR SI GENERAR ALERTA TEMPERATURA
-        conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'TMP']
+        conf_alarma_tmp = [
+            alarma for alarma in resultado_conf_alarma if alarma[0] == 'TMP']
         if registro[1] < parametro_estacion[0][2]:
-            mensaje_min = conf_alarma_tmp[0][2]
+            for estacion in estacion_result:
+                nombre_estacion = estacion[1]
+                print(nombre_estacion)
+            mensaje_min = f'{conf_alarma_tmp[0][2]} estacion {nombre_estacion} {registro[1]} °C '
             # estructura HTML para el mensaje
             mensaje_html = f"""
-                <html>
-                    <head></head>
+                 <html>
+                   <head></head>
                     <body>
-                        <h1>Alerta de temperatura</h1>
-                        <p>La temperatura superó el límite mínimo: {mensaje_min}</p>
-                    </body>
-                </html>
+                        <h1>Alerta de temperatura </h1>
+                        <p> {mensaje_min} </p>
+                   </body>
+               </html>
             """
-            Asunto=  'Alarma temperatura'
-            
+            Asunto = 'Alarma temperatura'
+
             for persona in personas:
-                # send_sms(persona[4],mensaje_min)
+                send_sms(persona[4], mensaje_min)
                 print("PERSONA: ", persona)
                 print("MSG: ", mensaje_min)
-                data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+                data = {'template': mensaje_html,
+                        'email_subject': Asunto, 'to_email': persona[3]}
                 send_email(data)
-                
 
         elif registro[1] > parametro_estacion[0][1]:
-            mensaje_max = conf_alarma_tmp[0][1]
+            mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[1]} °C'
+            mensaje_html_max = f"""
+                 <html>
+                   <head></head>
+                    <body>
+                        <h1>Alerta de temperatura </h1>
+                        <p> {mensaje_max} </p>
+                   </body>
+               </html>
+            """
             for persona in personas:
-                #print("PERSONA: ", persona)
-                #print("MSG: ", mensaje_max)
-                send_sms(persona[4],mensaje_max)
+                # print("PERSONA: ", persona)
+                # print("MSG: ", mensaje_max)
+                send_sms(persona[4], mensaje_max)
 
-                data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+                data = {'template': mensaje_html_max,
+                        'email_subject': 'Alarma', 'to_email': persona[3]}
                 send_email(data)
         else:
             # mensaje_no = conf_alarma_tmp[0][3]
@@ -76,9 +104,341 @@ def envio_alertas(data):
             #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
             #     send_email(data)
             pass
-        
+
+        # # VALIDAR SI GENERAR ALERTA HUMEDAD
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'HUR']
+        # if registro[2] < parametro_estacion[0][4]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     # estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta de temperatura</h1>
+        #                 <p>La humedad superó el límite mínimo: {mensaje_min}</p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_min, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[2] > parametro_estacion[0][3]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     # mensaje_no = conf_alarma_tmp[0][3]
+        #     # for persona in personas:
+        #     #     send_sms(persona[4],mensaje_no)
+
+        #     #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #     #     send_email(data)
+        #     pass
+
+        #  # VALIDAR SI GENERAR ALERTA PRESION BAROMETRICA
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'PRB']
+        # if registro[3] < parametro_estacion[0][6]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     # estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta de temperatura</h1>
+        #                 <p>La Presion Barometrica superó el límite mínimo: {mensaje_min}</p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_min, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[3] > parametro_estacion[0][5]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     # mensaje_no = conf_alarma_tmp[0][3]
+        #     # for persona in personas:
+        #     #     send_sms(persona[4],mensaje_no)
+
+        #     #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #     #     send_email(data)
+        #     pass
+
+        #  VALIDAR SI GENERAR ALERTA VELOCIDAD DEL VIENTO
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'VDV']
+        # if registro[4] < parametro_estacion[0][8]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta de velocidad del viento</h1>
+        #                 <p> </p>
+        #                 <p> {mensaje_min} {registro[4]} m/s</p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+        #     print("Registro",registro[4])
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         print("PERSONA: ", persona)
+        #         print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[4] > parametro_estacion[0][7]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         print("PERSONA: ", persona)
+        #         print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     mensaje_no = conf_alarma_tmp[0][3]
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_no)
+
+        #         data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        #     pass
+
+        # # VALIDAR SI GENERAR ALERTA DIRECCION DEL VIENTO
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'DDV']
+        # if registro[5] < parametro_estacion[0][10]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     # estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta de dirección del viento</h1>
+        #                 <p> </p>
+        #                 <p> {mensaje_min} {registro[5]} °</p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+        #     print("Registro",registro[5])
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[5] > parametro_estacion[0][9]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     # mensaje_no = conf_alarma_tmp[0][3]
+        #     # for persona in personas:
+        #     #     send_sms(persona[4],mensaje_no)
+
+        #     #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #     #     send_email(data)
+        #     pass
+
+        #  # VALIDAR SI GENERAR ALERTA Precipitacion
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'PCT']
+        # if registro[6] < parametro_estacion[0][12]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     # estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta de precipitacion</h1>
+        #                 <p> </p>
+        #                 <p> {mensaje_min} {registro[6]} mm</p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+        #     print("Registro",registro[6])
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[6] > parametro_estacion[0][11]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     # mensaje_no = conf_alarma_tmp[0][3]
+        #     # for persona in personas:
+        #     #     send_sms(persona[4],mensaje_no)
+
+        #     #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #     #     send_email(data)
+        #     pass
+
+        #  VALIDAR SI GENERAR ALERTA LUMINOSIDAD
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'LMN']
+        # if registro[7] < parametro_estacion[0][14]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta de Luminosidad</h1>
+        #                 <p> </p>
+        #                 <p> {mensaje_min} {registro[7]} </p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+        #     print("Registro",registro[7])
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         print("PERSONA: ", persona)
+        #         print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[7] > parametro_estacion[0][13]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         print("PERSONA: ", persona)
+        #         print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     mensaje_no = conf_alarma_tmp[0][3]
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_no)
+
+        #         data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        #     pass
+
+        # VALIDAR SI GENERAR ALERTA vELOCIDAD DEL AGUA
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'VDA']
+        # if registro[8] < parametro_estacion[0][16]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta de Velocidad del agua</h1>
+        #                 <p> </p>
+        #                 <p> {mensaje_min} {registro[8]} m/s</p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+        #     print("Registro",registro[8])
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         print("PERSONA: ", persona)
+        #         print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[8] > parametro_estacion[0][15]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         print("PERSONA: ", persona)
+        #         print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     mensaje_no = conf_alarma_tmp[0][3]
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_no)
+
+        #         data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        #     pass
+
+        # # VALIDAR SI GENERAR ALERTA NIVEL DEL AGUA
+        # conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
+        # if registro[9] < parametro_estacion[0][18]:
+        #     mensaje_min = conf_alarma_tmp[0][2]
+        #     # estructura HTML para el mensaje
+        #     mensaje_html = f"""
+        #         <html>
+        #             <head></head>
+        #             <body>
+        #                 <h1>Alerta Nivel del agua</h1>
+        #                 <p> </p>
+        #                 <p> {mensaje_min} {registro[9]} m</p>
+        #             </body>
+        #         </html>
+        #     """
+        #     Asunto=  'Alarma!!'
+        #     print("Registro",registro[9])
+
+        #     for persona in personas:
+        #         send_sms(persona[4],mensaje_min)
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_min)
+        #         data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+        #         send_email(data)
+
+        # elif registro[9] > parametro_estacion[0][17]:
+        #     mensaje_max = conf_alarma_tmp[0][1]
+        #     for persona in personas:
+        #         # print("PERSONA: ", persona)
+        #         # print("MSG: ", mensaje_max)
+        #         send_sms(persona[4],mensaje_max)
+        #         data = {'template': mensaje_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #         send_email(data)
+        # else:
+        #     # mensaje_no = conf_alarma_tmp[0][3]
+        #     # for persona in personas:
+        #     #     send_sms(persona[4],mensaje_no)
+
+        #     #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+        #     #     send_email(data)
+        #     pass
 
     return "Envio exitoso"
+
 
 def get_data_from_sql_server_estaciones():
 
@@ -282,7 +642,7 @@ def transfer_data():
         # Obtener datos de SQL Server
         data_parametros = get_data_from_sql_server_parametros()
         data_alertas = get_data_from_sql_server_alertas()  # Obtener datos de SQL Server
-        
+
         if datos_estacion:  # Si hay datos
             insert_data_into_postgresql_estaciones(
                 datos_estacion)  # Ins
@@ -305,15 +665,15 @@ def transfer_data():
 
 def get_data_from_postgresql():
 
-       # Conectarse a la base de datos SQL Server
-        conn_sql_server = conn_postgresq()
-        cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-        # Ejecutar una consulta SQL
-        cursor.execute(
-            'SELECT "T901fechaRegistro", "T901temperaturaAmbiente", "T901humedadAmbiente", "T901presionBarometrica", "T901velocidadViento", "T901direccionViento", "T901precipitacion", "T901luminosidad", "T901nivelAgua", "T901velocidadAgua", "T901Id_Estacion" FROM public."T901Datos";')
-        # Recuperar todos los resultados de la consulta
-        datos_data = cursor.fetchall()
-        envio_alertas(datos_data)
-        return True
-        print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
-        return False
+    # Conectarse a la base de datos SQL Server
+    conn_sql_server = conn_postgresq()
+    cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
+    # Ejecutar una consulta SQL
+    cursor.execute(
+        'SELECT "T901fechaRegistro", "T901temperaturaAmbiente", "T901humedadAmbiente", "T901presionBarometrica", "T901velocidadViento", "T901direccionViento", "T901precipitacion", "T901luminosidad", "T901nivelAgua", "T901velocidadAgua", "T901Id_Estacion" FROM public."T901Datos";')
+    # Recuperar todos los resultados de la consulta
+    datos_data = cursor.fetchall()
+    envio_alertas(datos_data)
+    return True
+    print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
+    return False
