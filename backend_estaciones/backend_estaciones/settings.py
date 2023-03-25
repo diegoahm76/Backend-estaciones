@@ -37,7 +37,6 @@ AUTHENTICATION_360_NRS = os.environ.get('AUTHENTICATION_360_NRS')
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
