@@ -1,1 +1,1 @@
-web: python manage.py makemigrations && python manage.py migrate && gunicorn backend_estaciones.wsgi --log-file -
+web: python manage.py makemigrations && python manage.py migrate && python manage.py crontab add && gunicorn backend_estaciones.wsgi --log-file -
