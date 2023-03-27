@@ -1,16 +1,19 @@
+import schedule
+import time
 import pymssql  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
 import psycopg2  # importar el módulo psycopg2 para conectarse a la base de datos PostgreSQL
 import os
 from estaciones.utlls_send import send_email, send_sms
+from estaciones.cron import test_cronjob
 
 # Conexión a SQL Server
 
 
 def connect_to_sql_server():
     connect = pymssql.connect(server=os.environ['MSSQL_DB_SERVER'],
-                user=os.environ['MSSQL_DB_USER'],
-                password=os.environ['MSSQL_DB_PASSWORD'],
-                database=os.environ['MSSQL_DB_DATABASE'])
+                              user=os.environ['MSSQL_DB_USER'],
+                              password=os.environ['MSSQL_DB_PASSWORD'],
+                              database=os.environ['MSSQL_DB_DATABASE'])
     cursor = connect.cursor()  # Crear un cursor para realizar consultas
     # Ejecutar una consulta SQL
     cursor.execute(
@@ -488,7 +491,8 @@ def envio_alertas(data):
         #     pass
 
         # VALIDAR SI GENERAR ALERTA NIVEL DEL AGUA
-        conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
+        conf_alarma_tmp = [
+            alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
         if registro[9] < parametro_estacion[0][18]:
             mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m'
             # estructura HTML para el mensaje
@@ -502,13 +506,15 @@ def envio_alertas(data):
                    </body>
                </html>
             """
-            Asunto=  'Alarma!!'
+            Asunto = 'Alarma!!'
 
             for persona in personas:
-                send_sms(persona[4],f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
+                send_sms(
+                    persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
                 # print("PERSONA: ", persona)
                 # print("MSG: ", mensaje_min)
-                data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+                data = {'template': mensaje_html,
+                        'email_subject': Asunto, 'to_email': persona[3]}
                 send_email(data)
 
         elif registro[9] > parametro_estacion[0][17]:
@@ -526,8 +532,10 @@ def envio_alertas(data):
             for persona in personas:
                 # print("PERSONA: ", persona)
                 # print("MSG: ", mensaje_max)
-                send_sms(persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                data = {'template': mensaje_html_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+                send_sms(
+                    persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
+                data = {'template': mensaje_html_max,
+                        'email_subject': 'Alarma', 'to_email': persona[3]}
                 send_email(data)
         else:
             # mensaje_no = conf_alarma_tmp[0][3]
@@ -762,7 +770,15 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
+schedule.every(1).minutes.do(test_cronjob)
+
+while True:  # Ciclo principal del programa
+    schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
+    # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
+    time.sleep(1)
+
 # PRUEBA
+
 
 def get_data_from_postgresql():
 
