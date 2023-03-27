@@ -1,4 +1,4 @@
-import pyodbc  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
+import pymssql  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
 import psycopg2  # importar el módulo psycopg2 para conectarse a la base de datos PostgreSQL
 import os
 from estaciones.utlls_send import send_email, send_sms
@@ -7,7 +7,18 @@ from estaciones.utlls_send import send_email, send_sms
 
 
 def connect_to_sql_server():
-    return pyodbc.connect(os.environ['MSSQL_DB_INFO'])
+    connect = pymssql.connect(server=os.environ['MSSQL_DB_SERVER'],
+                user=os.environ['MSSQL_DB_USER'],
+                password=os.environ['MSSQL_DB_PASSWORD'],
+                database=os.environ['MSSQL_DB_DATABASE'])
+    cursor = connect.cursor()  # Crear un cursor para realizar consultas
+    # Ejecutar una consulta SQL
+    cursor.execute(
+        'SELECT T001fechaMod, T001nombre , T001coord1, T001coord2 FROM T001Estaciones WHERE T001transferido = 0')
+    # Recuperar todos los resultados de la consulta
+    datos_estacion = cursor.fetchall()
+    print("DATOS_ESTACION: ", datos_estacion)
+    return connect
 
 # Conexión a PostgreSQL
 
@@ -756,6 +767,7 @@ def transfer_data():
 def get_data_from_postgresql():
 
     # Conectarse a la base de datos SQL Server
+    connect_to_sql_server()
     conn_sql_server = conn_postgresq()
     cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
     # Ejecutar una consulta SQL
