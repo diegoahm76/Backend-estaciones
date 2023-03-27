@@ -1,7 +1,7 @@
 from django.core.mail import EmailMessage
 from backend_estaciones.settings import EMAIL_HOST_USER, AUTHENTICATION_360_NRS
-import re, requests, json
-from twilio.rest import Client
+import requests, json
+# from twilio.rest import Client
 
 
 def send_email(data):

@@ -1,4 +1,4 @@
-import pyodbc  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
+# import pyodbc  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
 import psycopg2  # importar el módulo psycopg2 para conectarse a la base de datos PostgreSQL
 import os
 from estaciones.utlls_send import send_email, send_sms
@@ -7,7 +7,8 @@ from estaciones.utlls_send import send_email, send_sms
 
 
 def connect_to_sql_server():
-    return pyodbc.connect(os.environ['MSSQL_DB_INFO'])
+    # return pyodbc.connect(os.environ['MSSQL_DB_INFO'])
+    return True
 
 # Conexión a PostgreSQL
 
