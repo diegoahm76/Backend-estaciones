@@ -35,6 +35,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('BIA_EMAIL_HOST_PASSWORD')
 #token envio sms
 AUTHENTICATION_360_NRS = os.environ.get('AUTHENTICATION_360_NRS')
 
+# ALLOWED_HOSTS
 ALLOWED_HOSTS = ['*']
 
 # Application definition
