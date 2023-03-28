@@ -753,12 +753,10 @@ def insert_data_into_postgresql_alertas(data_alertas):
 def get_data_from_postgresql():
 
     # Conectarse a la base de datos SQL Server
-    connect_to_sql_server()
-    conn_sql_server = conn_postgresq()
+    conn_sql_server = connect_to_sql_server()
+    print("entro a mssql")
     cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-    # Ejecutar una consulta SQL
-    cursor.execute(
-        'SELECT "T901fechaRegistro", "T901temperaturaAmbiente", "T901humedadAmbiente", "T901presionBarometrica", "T901velocidadViento", "T901direccionViento", "T901precipitacion", "T901luminosidad", "T901nivelAgua", "T901velocidadAgua", "T901Id_Estacion" FROM public."T901Datos";')
+    cursor.execute('SELECT TOP 1000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')
     # Recuperar todos los resultados de la consulta
     datos_data = cursor.fetchall()
     envio_alertas(datos_data)
@@ -766,9 +764,15 @@ def get_data_from_postgresql():
     print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
     return False
 
-
+def enviar_aleryas():
+    prueba = get_data_from_postgresql()
+    print("Entro a la alerta")
+    if prueba:
+        return prueba
+    
 def transfer_data():
     try:
+        print("Entro a la migracion")
         # datos_estacion = get_data_from_sql_server_estaciones()  # Obtener datos de SQL Server
         data = get_data_from_sql_server_datos()  # Obtener datos de SQL Server
         # Obtener datos de SQL Server
@@ -794,11 +798,12 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(3).minutes.do(transfer_data)
+schedule.every(5).minutes.do(transfer_data)
+schedule.every(5).minutes.do(enviar_aleryas)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(3)
+    time.sleep(5)
 
 # PRUEBA
