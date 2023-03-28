@@ -592,7 +592,6 @@ def insert_data_into_postgresql_estaciones(datos_estacion):
 
 
 def get_data_from_sql_server_datos():
-
     try:
         # Conectarse a la base de datos SQL Server
         conn_sql_server = connect_to_sql_server()
@@ -603,10 +602,8 @@ def get_data_from_sql_server_datos():
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         print("datos", data)
         for row in data:  # Recorrer cada fila de los resultados
-            update_query = 'UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha = ? AND T002temperaturaAmbiente = ? AND T002humedadAmbiente = ? AND T002presionBarometrica = ? AND T002velocidadViento = ? AND T002direccionViento = ? AND T002precipitacion = ? AND T002luminocidad = ? AND T002nivelAgua = ? AND T002velocidadAgua = ? AND OBJECTID = ?'
-            cursor.execute(update_query, row)
-
-            # cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha =? AND T002temperaturaAmbiente =? AND T002humedadAmbiente =? AND T002presionBarometrica =? AND T002velocidadViento =? AND T002direccionViento=? AND T002precipitacion =? AND T002luminocidad =? AND T002nivelAgua =? AND T002velocidadAgua=? AND OBJECTID=?', row)  # Actualizar una fila de la tabla
+            # Actualizar una fila de la tabla
+            cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE OBJECTID=?', row[-1:])
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
         print("paso mssql rango 2")
         cursor.close()  # Cerrar el cursor
@@ -617,6 +614,7 @@ def get_data_from_sql_server_datos():
     except Exception as e:
         print(f"Ha ocurrido un error al obtener los datos de datos: {e}")
         return None
+
 
 
 def insert_data_into_postgresql_datos(data):
