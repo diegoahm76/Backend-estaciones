@@ -743,6 +743,23 @@ def insert_data_into_postgresql_alertas(data_alertas):
     except Exception as e:
         print(f"Ha ocurrido un error al insertar los datos de alertas: {e}")
 
+def get_data_from_postgresql():
+
+    # Conectarse a la base de datos SQL Server
+    connect_to_sql_server()
+    conn_sql_server = conn_postgresq()
+    cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
+    # Ejecutar una consulta SQL
+    cursor.execute(
+        'SELECT "T901fechaRegistro", "T901temperaturaAmbiente", "T901humedadAmbiente", "T901presionBarometrica", "T901velocidadViento", "T901direccionViento", "T901precipitacion", "T901luminosidad", "T901nivelAgua", "T901velocidadAgua", "T901Id_Estacion" FROM public."T901Datos";')
+    # Recuperar todos los resultados de la consulta
+    datos_data = cursor.fetchall()
+    envio_alertas(datos_data)
+    return True
+    print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
+    return False
+
+
 
 def transfer_data():
     try:
@@ -770,28 +787,13 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(1).minutes.do(test_cronjob)
+schedule.every(5).minutes.do(transfer_data)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(1)
+    time.sleep(5)
 
 # PRUEBA
 
 
-def get_data_from_postgresql():
-
-    # Conectarse a la base de datos SQL Server
-    connect_to_sql_server()
-    conn_sql_server = conn_postgresq()
-    cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-    # Ejecutar una consulta SQL
-    cursor.execute(
-        'SELECT "T901fechaRegistro", "T901temperaturaAmbiente", "T901humedadAmbiente", "T901presionBarometrica", "T901velocidadViento", "T901direccionViento", "T901precipitacion", "T901luminosidad", "T901nivelAgua", "T901velocidadAgua", "T901Id_Estacion" FROM public."T901Datos";')
-    # Recuperar todos los resultados de la consulta
-    datos_data = cursor.fetchall()
-    envio_alertas(datos_data)
-    return True
-    print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
-    return False
