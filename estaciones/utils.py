@@ -596,8 +596,10 @@ def get_data_from_sql_server_datos():
     try:
         # Conectarse a la base de datos SQL Server
         conn_sql_server = connect_to_sql_server()
+        print("entro a mssql")
         cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
         cursor.execute('SELECT TOP 1000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
+        print("paso mssql")
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         for row in data:  # Recorrer cada fila de los resultados
             cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha =? AND T002temperaturaAmbiente =? AND T002humedadAmbiente =? AND T002presionBarometrica =? AND T002velocidadViento =? AND T002direccionViento=? AND T002precipitacion =? AND T002luminocidad =? AND T002nivelAgua =? AND T002velocidadAgua=? AND OBJECTID=?', row)  # Actualizar una fila de la tabla
@@ -616,6 +618,7 @@ def insert_data_into_postgresql_datos(data):
 
     try:
         # Conectarse a la base de datos PostgreSQL
+        print("entro a postgres")
         conn_postgresql = conn_postgresq()
         cursor = conn_postgresql.cursor()  # Crear un cursor para realizar consultas
         cursor.executemany('INSERT INTO "T901Datos" ("T901fechaRegistro", "T901temperaturaAmbiente", "T901humedadAmbiente", "T901presionBarometrica", "T901velocidadViento", "T901direccionViento", "T901precipitacion", "T901luminosidad", "T901nivelAgua", "T901velocidadAgua", "T901Id_Estacion") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', data)  # Insertar varias filas en la tabla
@@ -763,25 +766,25 @@ def get_data_from_postgresql():
 
 def transfer_data():
     try:
-        datos_estacion = get_data_from_sql_server_estaciones()  # Obtener datos de SQL Server
+        # datos_estacion = get_data_from_sql_server_estaciones()  # Obtener datos de SQL Server
         data = get_data_from_sql_server_datos()  # Obtener datos de SQL Server
         # Obtener datos de SQL Server
-        data_parametros = get_data_from_sql_server_parametros()
-        data_alertas = get_data_from_sql_server_alertas()  # Obtener datos de SQL Server
+        # data_parametros = get_data_from_sql_server_parametros()
+        # data_alertas = get_data_from_sql_server_alertas()  # Obtener datos de SQL Server
 
-        if datos_estacion:  # Si hay datos
-            insert_data_into_postgresql_estaciones(
-                datos_estacion)  # Ins
+        # if datos_estacion:  # Si hay datos
+        #     insert_data_into_postgresql_estaciones(
+        #         datos_estacion)  # Ins
+
         if data:  # Si hay datos
-            insert_data_into_postgresql_datos(
-                data)  # Insertar datos en PostgreSQLertar datos en PostgreSQL
+            insert_data_into_postgresql_datos(data)  # Insertar datos en PostgreSQLertar datos en PostgreSQL
 
-        if data_parametros:  # Si hay datos
-            insert_data_into_postgresql_parametros(
-                data_parametros)  # Insertar datos en PostgreSQL
-        if data_alertas:  # Si hay datos
-            insert_data_into_postgresql_alertas(
-                data_alertas)  # Insertar datos en PostgreSQL
+        # if data_parametros:  # Si hay datos
+        #     insert_data_into_postgresql_parametros(
+        #         data_parametros)  # Insertar datos en PostgreSQL
+        # if data_alertas:  # Si hay datos
+        #     insert_data_into_postgresql_alertas(
+        #         data_alertas)  # Insertar datos en PostgreSQL
 
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
