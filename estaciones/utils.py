@@ -14,13 +14,13 @@ def connect_to_sql_server():
                               user=os.environ['MSSQL_DB_USER'],
                               password=os.environ['MSSQL_DB_PASSWORD'],
                               database=os.environ['MSSQL_DB_DATABASE'])
-    cursor = connect.cursor()  # Crear un cursor para realizar consultas
-    # Ejecutar una consulta SQL
-    cursor.execute(
-        'SELECT T001fechaMod, T001nombre , T001coord1, T001coord2 FROM T001Estaciones WHERE T001transferido = 0')
-    # Recuperar todos los resultados de la consulta
-    datos_estacion = cursor.fetchall()
-    print("DATOS_ESTACION: ", datos_estacion)
+    # cursor = connect.cursor()  # Crear un cursor para realizar consultas
+    # # Ejecutar una consulta SQL
+    # cursor.execute(
+    #     'SELECT T001fechaMod, T001nombre , T001coord1, T001coord2 FROM T001Estaciones WHERE T001transferido = 1')
+    # # Recuperar todos los resultados de la consulta
+    # datos_estacion = cursor.fetchall()
+    # print("DATOS_ESTACION: ", datos_estacion)
     return connect
 
 # Conexión a PostgreSQL
@@ -604,6 +604,7 @@ def get_data_from_sql_server_datos():
         for row in data:  # Recorrer cada fila de los resultados
             cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha =? AND T002temperaturaAmbiente =? AND T002humedadAmbiente =? AND T002presionBarometrica =? AND T002velocidadViento =? AND T002direccionViento=? AND T002precipitacion =? AND T002luminocidad =? AND T002nivelAgua =? AND T002velocidadAgua=? AND OBJECTID=?', row)  # Actualizar una fila de la tabla
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
+        print("paso mssql rango 2")
         cursor.close()  # Cerrar el cursor
         conn_sql_server.close()  # Cerrar la conexión
         print("ENTRA GET DATA FROM DATOS")
@@ -746,6 +747,7 @@ def insert_data_into_postgresql_alertas(data_alertas):
     except Exception as e:
         print(f"Ha ocurrido un error al insertar los datos de alertas: {e}")
 
+
 def get_data_from_postgresql():
 
     # Conectarse a la base de datos SQL Server
@@ -763,7 +765,6 @@ def get_data_from_postgresql():
     return False
 
 
-
 def transfer_data():
     try:
         # datos_estacion = get_data_from_sql_server_estaciones()  # Obtener datos de SQL Server
@@ -777,7 +778,8 @@ def transfer_data():
         #         datos_estacion)  # Ins
 
         if data:  # Si hay datos
-            insert_data_into_postgresql_datos(data)  # Insertar datos en PostgreSQLertar datos en PostgreSQL
+            # Insertar datos en PostgreSQLertar datos en PostgreSQL
+            insert_data_into_postgresql_datos(data)
 
         # if data_parametros:  # Si hay datos
         #     insert_data_into_postgresql_parametros(
@@ -790,13 +792,11 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(5).minutes.do(transfer_data)
+schedule.every(3).minutes.do(transfer_data)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(5)
+    time.sleep(3)
 
 # PRUEBA
-
-
