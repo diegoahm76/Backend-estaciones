@@ -603,7 +603,7 @@ def get_data_from_sql_server_datos():
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         print("datos", data)
         envio_alertas(data)
-        print("Se envio Alerta")
+        print("Se envio Alerta al usuario")
         for row in data:  # Recorrer cada fila de los resultados
             cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha = %s AND T002temperaturaAmbiente = %s AND T002humedadAmbiente = %s AND T002presionBarometrica = %s AND T002velocidadViento = %s AND T002direccionViento = %s AND T002precipitacion = %s AND T002luminocidad = %s AND T002nivelAgua = %s AND T002velocidadAgua = %s AND OBJECTID = %s', (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10]))
 
