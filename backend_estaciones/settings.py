@@ -25,14 +25,14 @@ SECRET_KEY = 'django-insecure-+ye9*l9^kjud3w5t785be&1&)oqd8$bi2u8oijem#iy@xi9ze@
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-#envio de email
+# envio de email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.outlook.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('BIA_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('BIA_EMAIL_HOST_PASSWORD')
-#token envio sms
+# token envio sms
 AUTHENTICATION_360_NRS = os.environ.get('AUTHENTICATION_360_NRS')
 
 # ALLOWED_HOSTS
@@ -92,7 +92,7 @@ DATABASES = {
     }
 }
 
-CRONJOBS = [    ('*/1 * * * *', 'estaciones.cron.test_cronjob')]
+CRONJOBS = [('*/1 * * * *', 'estaciones.cron.test_cronjob')]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
