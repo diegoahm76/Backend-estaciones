@@ -97,13 +97,6 @@ CRONJOBS = [
     ('*/1 * * * *', 'estaciones.cron.test_cronjob'),
 ]
 
-# configura django-crontab
-CRONJOBS_EXECUTORS = [
-    ('*/1 * * * *', 'django.core.management.call_command', ['cron'], {'verbosity': 0}),
-]
-CRONJOBS_AUTODISCOVER = True
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
