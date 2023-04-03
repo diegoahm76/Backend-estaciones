@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+from django.core.management import execute_from_command_line
 import os
 import sys
 
+if 'runserver' not in sys.argv:
+    # Ejecuta las tareas programadas automáticamente cuando el servidor no se está ejecutando
+    execute_from_command_line(['manage.py', 'crontab', 'run'])
 
 def main():
     """Run administrative tasks."""
