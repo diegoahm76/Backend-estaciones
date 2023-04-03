@@ -2,7 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from django_crontab import crontab
 
+# Configurar los cronjobs
+crontab.add_command('*/1 * * * *', 'estaciones.cron.test_cronjob')
 
 def main():
     """Run administrative tasks."""
