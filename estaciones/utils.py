@@ -799,7 +799,6 @@ def transfer_data():
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 
-
 schedule.every(5).minutes.do(transfer_data)
 
 while True:  # Ciclo principal del programa
