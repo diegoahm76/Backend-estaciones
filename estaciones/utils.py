@@ -605,8 +605,9 @@ def get_data_from_sql_server_datos():
         envio_alertas(data)
         print("Se envio Alerta al usuario")
         for row in data:  # Recorrer cada fila de los resultados
-            cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha = %s AND T002temperaturaAmbiente = %s AND T002humedadAmbiente = %s AND T002presionBarometrica = %s AND T002velocidadViento = %s AND T002direccionViento = %s AND T002precipitacion = %s AND T002luminocidad = %s AND T002nivelAgua = %s AND T002velocidadAgua = %s AND OBJECTID = %s', (str(
-                row[0]), str(row[1]), str(row[2]), str(row[3]), str(row[4]), str(row[5]), str(row[6]), str(row[7]), str(row[8]), str(row[9]), str(row[10])))
+            # Reemplazar valores nulos por la palabra clave "NULL"
+            row = tuple("NULL" if val is None else val for val in row)
+            cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha = %s AND T002temperaturaAmbiente = %s AND T002humedadAmbiente = %s AND T002presionBarometrica = %s AND T002velocidadViento = %s AND T002direccionViento = %s AND T002precipitacion = %s AND T002luminocidad = %s AND T002nivelAgua = %s AND T002velocidadAgua = %s AND OBJECTID = %s', row)
 
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
         print("paso mssql rango 2")
