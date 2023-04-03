@@ -596,24 +596,16 @@ def get_data_from_sql_server_datos():
     try:
         # Conectarse a la base de datos SQL Server
         conn_sql_server = connect_to_sql_server()
-        print("entro a mssql")
         cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-        cursor.execute('SELECT TOP 1000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
-        print("paso mssql")
+        cursor.execute('SELECT IdData, T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
-        print("datos", data)
+        print("data", data)
         envio_alertas(data)
-        print("Se envio Alerta al usuario")
         for row in data:  # Recorrer cada fila de los resultados
-            # Reemplazar valores nulos por la palabra clave "NULL"
-            row = tuple("NULL" if val is None else val for val in row)
-            cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha = %s AND T002temperaturaAmbiente = %s AND T002humedadAmbiente = %s AND T002presionBarometrica = %s AND T002velocidadViento = %s AND T002direccionViento = %s AND T002precipitacion = %s AND T002luminocidad = %s AND T002nivelAgua = %s AND T002velocidadAgua = %s AND OBJECTID = %s', row)
-
+            cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE IdData =? AND T002fecha =? AND T002temperaturaAmbiente =? AND T002humedadAmbiente =? AND T002presionBarometrica =? AND T002velocidadViento =? AND T002direccionViento=? AND T002precipitacion =? AND T002luminocidad =? AND T002nivelAgua =? AND T002velocidadAgua=? AND OBJECTID=?', row)  # Actualizar una fila de la tabla
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
-        print("paso mssql rango 2")
         cursor.close()  # Cerrar el cursor
         conn_sql_server.close()  # Cerrar la conexión
-        print("ENTRA GET DATA FROM DATOS")
         return data
         pass
     except Exception as e:
