@@ -804,11 +804,11 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(5).minutes.do(transfer_data)
+# schedule.every(5).minutes.do(transfer_data)
 
-while True:  # Ciclo principal del programa
-    schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
-    # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(5)
+# while True:  # Ciclo principal del programa
+#     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
+#     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
+#     time.sleep(5)
 
 # PRUEBA
