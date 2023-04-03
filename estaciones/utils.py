@@ -597,7 +597,7 @@ def get_data_from_sql_server_datos():
         # Conectarse a la base de datos SQL Server
         conn_sql_server = connect_to_sql_server()
         cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-        cursor.execute('SELECT IdData, T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
+        cursor.execute('SELECT TOP 100 IdData, T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         print("data", data)
         envio_alertas(data)
@@ -796,11 +796,11 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(5).minutes.do(transfer_data)
+schedule.every(1).minutes.do(transfer_data)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(5)
+    time.sleep(1)
 
 PRUEBA
