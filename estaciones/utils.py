@@ -607,7 +607,7 @@ def get_data_from_sql_server_datos():
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         # Convertir data a una cadena de texto para evitar la concatenación con un valor nulo
         print("Datos obtenidos:", str(data))
-        envio_alertas(data)
+        # envio_alertas(data)
         print("Alertas enviadas")
         for row in data:  # Recorrer cada fila de los resultados
             cursor.execute('UPDATE T002Datos SET T002transferido = 1 WHERE T002fecha = %s AND T002temperaturaAmbiente = %s AND T002humedadAmbiente = %s AND T002presionBarometrica = %s AND T002velocidadViento = %s AND T002direccionViento = %s AND T002precipitacion = %s AND T002luminocidad = %s AND T002nivelAgua = %s AND T002velocidadAgua = %s AND OBJECTID = %s',
@@ -765,7 +765,7 @@ def get_data_from_postgresql():
     cursor.execute('SELECT TOP 1000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')
     # Recuperar todos los resultados de la consulta
     datos_data = cursor.fetchall()
-    envio_alertas(datos_data)
+    # envio_alertas(datos_data)
     return True
     print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
     return False
