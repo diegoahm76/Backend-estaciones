@@ -551,6 +551,7 @@ def envio_alertas(data):
             pass
 
 
+
     return "Envio exitoso"
 
 
