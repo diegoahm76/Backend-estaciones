@@ -501,7 +501,7 @@ def envio_alertas(data):
                     <html>
                     <head></head>
                         <body>
-                            <h3>Alerta de nivel de agua </h3>
+                            <h3>Nueva Alerta de nivel de agua </h3>
                             <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
                             <p> {mensaje_min} </p>
                     </body>
