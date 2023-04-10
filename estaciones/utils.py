@@ -512,8 +512,8 @@ def envio_alertas(data):
                 for persona in personas:
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
-                    print("PERSONA: ", persona)
-                    print("MSG: ", mensaje_min)
+                    # print("PERSONA: ", persona)
+                    # print("MSG: ", mensaje_min)
                     data = {'template': mensaje_html,
                             'email_subject': Asunto, 'to_email': persona[3]}
                     send_email(data)
@@ -549,6 +549,7 @@ def envio_alertas(data):
         else:
             # En caso de que no haya alarmas, no hacemos nada
             pass
+
 
 
 
