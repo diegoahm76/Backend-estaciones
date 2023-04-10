@@ -492,16 +492,16 @@ def envio_alertas(data):
 
         # VALIDAR SI GENERAR ALERTA NIVEL DEL AGUA
         conf_alarma_tmp = [
-        alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
+            alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
         if len(conf_alarma_tmp) > 0:
-            if registro[9] is not None and registro[9] < parametro_estacion[0][18]:
+            if registro[9] < parametro_estacion[0][18]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m'
                 # estructura HTML para el mensaje
                 mensaje_html = f"""
                     <html>
                     <head></head>
                         <body>
-                            <h3>Nueva Alerta de nivel de agua </h3>
+                            <h3>Alerta de nivel de agua </h3>
                             <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
                             <p> {mensaje_min} </p>
                     </body>
@@ -518,7 +518,7 @@ def envio_alertas(data):
                             'email_subject': Asunto, 'to_email': persona[3]}
                     send_email(data)
 
-            elif registro[9] is not None and registro[9] > parametro_estacion[0][17]:
+            elif registro[9] > parametro_estacion[0][17]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m'
                 mensaje_html_max = f"""
                     <html>
@@ -549,6 +549,7 @@ def envio_alertas(data):
         else:
             # En caso de que no haya alarmas, no hacemos nada
             pass
+
 
 
     return "Envio exitoso"
