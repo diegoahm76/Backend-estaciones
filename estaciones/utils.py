@@ -550,8 +550,6 @@ def envio_alertas(data):
             # En caso de que no haya alarmas, no hacemos nada
             pass
 
-
-
     return "Envio exitoso"
 
 
@@ -681,11 +679,13 @@ def get_data_from_sql_server_alertas():
         # Conectarse a la base de datos SQL Server
         conn_sql_server = connect_to_sql_server()
         cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-        cursor.execute("""SELECT T004descripcion, T004fecha,
+        cursor.execute("""SELECT TOP 100 T004descripcion, T004fecha,
     CASE 
         WHEN T004descripcion LIKE '%Conversor 1 RS485%' THEN 'Conversor 1 RS485'
-        WHEN T004descripcion LIKE '%sensor meteorológico%' THEN 'sensor meteorológico'
+		WHEN T004descripcion LIKE '%Conversor RS485%' THEN 'Conversor RS485'
+        WHEN T004descripcion LIKE '%sensor meteorologico%' THEN 'sensor meteorologico'
         WHEN T004descripcion LIKE '%sensor radar%' THEN 'sensor radar'
+		WHEN T004descripcion LIKE '%luminosidad%' THEN 'luminosidad'
         WHEN T004descripcion LIKE '%Voltaje%' THEN 'Voltaje'
         WHEN T004descripcion LIKE '%ángulo%' THEN 'ángulo'
         WHEN T004descripcion LIKE '%Paneles%' THEN 'Paneles'
@@ -696,7 +696,7 @@ def get_data_from_sql_server_alertas():
         WHEN T004descripcion LIKE '%presión%' THEN 'presión' 
         WHEN T004descripcion LIKE '%velocidad del viento%' THEN 'velocidad del viento' 
         WHEN T004descripcion LIKE '%dirección del viento%' THEN 'dirección del viento' 
-        WHEN T004descripcion LIKE '%precipitación%' THEN 'precipitación' 
+        WHEN T004descripcion LIKE '%precipitacion%' THEN 'precipitacion' 
         WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua' 
         WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
     END AS T004palabra ,
@@ -706,29 +706,30 @@ FROM T004Alertas WHERE T004transferido=0""")
    # Ejecutar una consulta SQL
         # Recuperar todos los resultados de la consulta
         data_parametros = cursor.fetchall()
+        print("data parametros ", data_parametros)
         for row in data_parametros:  # Recorrer cada fila de los resultados
             cursor.execute('UPDATE T004Alertas SET T004transferido = 1 '
-                           'WHERE T004descripcion = ? '
-                           'AND T004fecha = ? AND '
-                           '(CASE '
-                           'WHEN T004descripcion LIKE \'%Conversor 1 RS485%\' THEN \'Conversor 1 RS485\' '
-                           'WHEN T004descripcion LIKE \'%sensor meteorológico%\' THEN \'sensor meteorológico\''
-                           'WHEN T004descripcion LIKE \'%sensor radar%\' THEN \'sensor radar\' '
-                           'WHEN T004descripcion LIKE \'%Voltaje%\' THEN \'Voltaje\' '
-                           'WHEN T004descripcion LIKE \'%ángulo%\' THEN \'ángulo\' '
-                           'WHEN T004descripcion LIKE \'%Paneles%\' THEN \'Paneles\' '
-                           'WHEN T004descripcion LIKE \'%Baterías%\' THEN \'Baterías\' '
-                           'WHEN T004descripcion LIKE \'%Conversor 0 RS485%\' THEN \'Conversor 0 RS485\' '
-                           'WHEN T004descripcion LIKE \'%temperatura%\' THEN \'temperatura\' '
-                           'WHEN T004descripcion LIKE \'%humedad%\' THEN \'humedad\' '
-                           'WHEN T004descripcion LIKE \'%presión%\' THEN \'presión\' '
-                           'WHEN T004descripcion LIKE \'%velocidad del viento%\' THEN \'velocidad del viento\''
-                           'WHEN T004descripcion LIKE \'%dirección del viento%\' THEN \'dirección del viento\''
-                           'WHEN T004descripcion LIKE \'%precipitación%\' THEN \'precipitación\' '
-                           'WHEN T004descripcion LIKE \'%nivel del agua%\' THEN \'nivel del agua\' '
-                           'WHEN T004descripcion LIKE \'%velocidad del agua%\' THEN \'velocidad del agua\' '
-                           'END) = ? AND OBJECTID = ?', row)  # Actualizar una fila de la tabla
-    # Actualizar una fila de la tabla
+               'WHERE T004descripcion = ? '
+               'AND T004fecha = ? AND '
+               '(CASE '
+               'WHEN T004descripcion LIKE \'%Conversor RS485%\' THEN \'Conversor 1 RS485\' '
+               'WHEN T004descripcion LIKE \'%Conversor RS485%\' THEN \'Conversor RS485\' '
+               'WHEN T004descripcion LIKE \'%sensor meteorologico%\' THEN \'sensor meteorológico\' '
+               'WHEN T004descripcion LIKE \'%sensor radar%\' THEN \'sensor radar\' '
+               'WHEN T004descripcion LIKE \'%Voltaje%\' THEN \'Voltaje\' '
+               'WHEN T004descripcion LIKE \'%ángulo%\' THEN \'ángulo\' '
+               'WHEN T004descripcion LIKE \'%Paneles%\' THEN \'Paneles\' '
+               'WHEN T004descripcion LIKE \'%Baterías%\' THEN \'Baterías\' '
+               'WHEN T004descripcion LIKE \'%Conversor 0 RS485%\' THEN \'Conversor 0 RS485\' '
+               'WHEN T004descripcion LIKE \'%temperatura%\' THEN \'temperatura\' '
+               'WHEN T004descripcion LIKE \'%humedad%\' THEN \'humedad\' '
+               'WHEN T004descripcion LIKE \'%Presion%\' THEN \'Presion\' '
+               'WHEN T004descripcion LIKE \'%velocidad del viento%\' THEN \'velocidad del viento\' '
+               'WHEN T004descripcion LIKE \'%dirección del viento%\' THEN \'dirección del viento\' '
+               'WHEN T004descripcion LIKE \'%precipitación%\' THEN \'precipitación\' '
+               'WHEN T004descripcion LIKE \'%nivel del agua%\' THEN \'nivel del agua\' '
+               'WHEN T004descripcion LIKE \'%velocidad del agua%\' THEN \'velocidad del agua\' '
+               'END) = ? AND OBJECTID = ?', (row[0], row[1], row[2])) # Actualizar una fila de la tabla
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
         cursor.close()  # Cerrar el cursor
         conn_sql_server.close()  # Cerrar la conexión
@@ -800,7 +801,7 @@ def transfer_data():
         #         data_parametros)  # Insertar datos en PostgreSQL
         if data_alertas:  # Si hay datos
             insert_data_into_postgresql_alertas(
-            data_alertas)  # Insertar datos en PostgreSQL
+                data_alertas)  # Insertar datos en PostgreSQL
 
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
