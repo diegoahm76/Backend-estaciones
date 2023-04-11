@@ -785,7 +785,7 @@ def transfer_data():
         data = get_data_from_sql_server_datos()  # Obtener datos de SQL Server
         # Obtener datos de SQL Server
         # data_parametros = get_data_from_sql_server_parametros()
-        # data_alertas = get_data_from_sql_server_alertas()  # Obtener datos de SQL Server
+        data_alertas = get_data_from_sql_server_alertas()  # Obtener datos de SQL Server
 
         # if datos_estacion:  # Si hay datos
         #     insert_data_into_postgresql_estaciones(
@@ -798,9 +798,9 @@ def transfer_data():
         # if data_parametros:  # Si hay datos
         #     insert_data_into_postgresql_parametros(
         #         data_parametros)  # Insertar datos en PostgreSQL
-        # if data_alertas:  # Si hay datos
-        #     insert_data_into_postgresql_alertas(
-        #         data_alertas)  # Insertar datos en PostgreSQL
+        if data_alertas:  # Si hay datos
+            insert_data_into_postgresql_alertas(
+            data_alertas)  # Insertar datos en PostgreSQL
 
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
