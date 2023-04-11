@@ -708,28 +708,29 @@ FROM T004Alertas WHERE T004transferido=0""")
         data_parametros = cursor.fetchall()
         print("data parametros ", data_parametros)
         for row in data_parametros:  # Recorrer cada fila de los resultados
-            cursor.execute('UPDATE T004Alertas SET T004transferido = 1 '
-               'WHERE T004descripcion = ? '
-               'AND T004fecha = ? AND '
-               '(CASE '
-               'WHEN T004descripcion LIKE \'%Conversor RS485%\' THEN \'Conversor 1 RS485\' '
-               'WHEN T004descripcion LIKE \'%Conversor RS485%\' THEN \'Conversor RS485\' '
-               'WHEN T004descripcion LIKE \'%sensor meteorologico%\' THEN \'sensor meteorológico\' '
-               'WHEN T004descripcion LIKE \'%sensor radar%\' THEN \'sensor radar\' '
-               'WHEN T004descripcion LIKE \'%Voltaje%\' THEN \'Voltaje\' '
-               'WHEN T004descripcion LIKE \'%ángulo%\' THEN \'ángulo\' '
-               'WHEN T004descripcion LIKE \'%Paneles%\' THEN \'Paneles\' '
-               'WHEN T004descripcion LIKE \'%Baterías%\' THEN \'Baterías\' '
-               'WHEN T004descripcion LIKE \'%Conversor 0 RS485%\' THEN \'Conversor 0 RS485\' '
-               'WHEN T004descripcion LIKE \'%temperatura%\' THEN \'temperatura\' '
-               'WHEN T004descripcion LIKE \'%humedad%\' THEN \'humedad\' '
-               'WHEN T004descripcion LIKE \'%Presion%\' THEN \'Presion\' '
-               'WHEN T004descripcion LIKE \'%velocidad del viento%\' THEN \'velocidad del viento\' '
-               'WHEN T004descripcion LIKE \'%dirección del viento%\' THEN \'dirección del viento\' '
-               'WHEN T004descripcion LIKE \'%precipitación%\' THEN \'precipitación\' '
-               'WHEN T004descripcion LIKE \'%nivel del agua%\' THEN \'nivel del agua\' '
-               'WHEN T004descripcion LIKE \'%velocidad del agua%\' THEN \'velocidad del agua\' '
-               'END) = ? AND OBJECTID = ?', (row[0], row[1], row[2])) # Actualizar una fila de la tabla
+            cursor.execute("""UPDATE T004Alertas SET T004transferido = 1 
+                WHERE T004descripcion = ? 
+                AND T004fecha = ? AND 
+                (CASE 
+                    WHEN T004descripcion LIKE '%Conversor RS485%' THEN 'Conversor 1 RS485' 
+                    WHEN T004descripcion LIKE '%Conversor RS485%' THEN 'Conversor RS485' 
+                    WHEN T004descripcion LIKE '%sensor meteorologico%' THEN 'sensor meteorológico' 
+                    WHEN T004descripcion LIKE '%sensor radar%' THEN 'sensor radar' 
+                    WHEN T004descripcion LIKE '%Voltaje%' THEN 'Voltaje' 
+                    WHEN T004descripcion LIKE '%ángulo%' THEN 'ángulo' 
+                    WHEN T004descripcion LIKE '%Paneles%' THEN 'Paneles' 
+                    WHEN T004descripcion LIKE '%Baterías%' THEN 'Baterías' 
+                    WHEN T004descripcion LIKE '%Conversor 0 RS485%' THEN 'Conversor 0 RS485' 
+                    WHEN T004descripcion LIKE '%temperatura%' THEN 'temperatura' 
+                    WHEN T004descripcion LIKE '%humedad%' THEN 'humedad' 
+                    WHEN T004descripcion LIKE '%Presion%' THEN 'Presion' 
+                    WHEN T004descripcion LIKE '%velocidad del viento%' THEN 'velocidad del viento' 
+                    WHEN T004descripcion LIKE '%dirección del viento%' THEN 'dirección del viento' 
+                    WHEN T004descripcion LIKE '%precipitación%' THEN 'precipitación' 
+                    WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua' 
+                    WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua' 
+                END) = ? AND OBJECTID = ?""", (row[0], row[1], row[2]))
+ # Actualizar una fila de la tabla
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
         cursor.close()  # Cerrar el cursor
         conn_sql_server.close()  # Cerrar la conexión
