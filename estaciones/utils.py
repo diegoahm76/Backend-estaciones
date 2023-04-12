@@ -509,17 +509,18 @@ def envio_alertas(data):
             </html>
             """
             Asunto = 'Alarma!!'
-            print("Paso Html")
+            print("Paso Html min")
 
             for persona in personas:
                 send_sms(
                     persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
+                print("envio sms min")
                 # print("PERSONA: ", persona)
                 # print("MSG: ", mensaje_min)
                 data = {'template': mensaje_html,
                         'email_subject': Asunto, 'to_email': persona[3]}
                 send_email(data)
-
+                print("envio email min")
         elif registro[9] > parametro_estacion[0][17]:
             mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
             print("Mensaje max", mensaje_max)
@@ -533,14 +534,17 @@ def envio_alertas(data):
                 </body>
             </html>
             """
+            print("Paso Html max")
             for persona in personas:
                 # print("PERSONA: ", persona)
                 # print("MSG: ", mensaje_max)
                 send_sms(
                     persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
+                print("envio sms min")
                 data = {'template': mensaje_html_max,
                         'email_subject': 'Alarma', 'to_email': persona[3]}
                 send_email(data)
+                print("envio email max")
         else:
             # mensaje_no = conf_alarma_tmp[0][3]
             # for persona in personas:
@@ -833,9 +837,9 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(1).minutes.do(enviar_alertas)
+# schedule.every(1).minutes.do(enviar_alertas)
 
-while True:  # Ciclo principal del programa
-    schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
-    # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(1)
+# while True:  # Ciclo principal del programa
+#     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
+#     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
+#     time.sleep(1)
