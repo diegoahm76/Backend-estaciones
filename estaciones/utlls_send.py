@@ -41,7 +41,7 @@ def send_sms(phone, sms):
         #                     from_=from_whatsapp_number,
         #                     to=to_whatsapp_number)
 
-
+        
         response = requests.request("POST", url, headers=headers, data=payload.encode("utf-8"))
 
         print(response.text)
