@@ -512,6 +512,9 @@ def envio_alertas(data):
             print("Paso Html min")
 
             for persona in personas:
+                print("Entro al for")
+                print("sms",
+                    persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
                 send_sms(
                     persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
                 print("envio sms min")
