@@ -533,7 +533,7 @@ def envio_alertas(data):
                 print("envio email min")
         elif registro[9] > parametro_estacion[0][17]:
             mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
-            print("Mensaje max", mensaje_max)
+            print("Mensaje max sms", mensaje_max)
             mensaje_html_max = f"""
                 <html>
                 <head></head>
