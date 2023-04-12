@@ -828,6 +828,10 @@ def transfer_data():
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 
+def prueba_mensaje():
+    msg="Hola Mundo Prueba 2, este es el nuevo mensaje"
+    print(msg)
+    return msg
 
 schedule.every(1).minutes.do(enviar_alertas)
 
