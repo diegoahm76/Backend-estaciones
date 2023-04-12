@@ -28,24 +28,11 @@ def send_sms(phone, sms):
         'Content-Type': 'application/json', 
         'Authorization': 'Basic ' + AUTHENTICATION_360_NRS
         }
-        
-        # account_sid = os.environ['TWILIO_ACCOUNT_SID']
-        # auth_token = os.environ['TWILIO_AUTH_TOKEN']    
-        # client = Client(account_sid, auth_token)
-        # # this is the Twilio sandbox testing number
-        # from_whatsapp_number='whatsapp:+14155238886'
-        # # replace this number with your own WhatsApp Messaging number
-        # to_whatsapp_number='whatsapp:+' + telefono
-
-        # client.messages.create(body='Ingresó en Cormacarena-bia',
-        #                     from_=from_whatsapp_number,
-        #                     to=to_whatsapp_number)
-
-        
+        print("paso header")
+        print("Response",requests.request("POST", url, headers=headers, data=payload.encode("utf-8")))
         response = requests.request("POST", url, headers=headers, data=payload.encode("utf-8"))
 
         print(response.text)
-        #client.messages.create(messaging_service_sid=TWILIO_MESSAGING_SERVICE_SID, body=sms, from_=PHONE_NUMBER, to=phone)
 
 #Envio de whatsapp
 # def send_whatsapp_message(phone_numbers, message):
