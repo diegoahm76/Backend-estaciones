@@ -19,24 +19,24 @@ def send_sms(phone, sms):
         telefono = phone
         mensaje = sms
         telefono = telefono.replace("+","")
-        print("SMS: ", mensaje)
         print(telefono)
         print(len(sms))
-        payload = "{ \"to\": [\"" + telefono + "\"], \"from\": \"TEST\", \"message\": \"" + mensaje + "\" }"
-        print("PAYLOAD",payload)
-        print("Paso payload")
+        print("sms", mensaje)
+    
 
-        print("AUTHENTICATION_360_NRS", AUTHENTICATION_360_NRS)
+        payload = {"to": [telefono], "from": "TEST", "message": mensaje}
+        payload = json.dumps(payload).encode('utf-8')
+
+        print("payload", payload)
+
         headers = {
         'Content-Type': 'application/json', 
         'Authorization': 'Basic ' + AUTHENTICATION_360_NRS
         }
-        print("Headers",headers)
-        print("paso header")
-        print("Response",requests.request("POST", url, headers=headers, data=payload.encode("utf-8")))
-        response = requests.request("POST", url, headers=headers, data=payload.encode("utf-8"))
-
-        print(response.text)
+        print("Paso Headers")
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print("response",response)
+        print("response",response.text)
 
 #Envio de whatsapp
 # def send_whatsapp_message(phone_numbers, message):
