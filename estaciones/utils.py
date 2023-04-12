@@ -728,8 +728,7 @@ def get_data_from_sql_server_alertas():
 
         for row in data_parametros:
             # Actualizar la columna "T004transferido" a 1 para cada fila recuperada
-            cursor.execute(
-                "UPDATE T004Alertas SET T004transferido = 1 WHERE OBJECTID = ?", row[2])
+            cursor.execute("UPDATE T004Alertas SET T004transferido = 1 WHERE OBJECTID = ?", (row[3],))
         conn_sql_server.commit()  # Confirmar la actualización
         print("Los registros se actualizaron correctamente.")
     except Exception as e:
