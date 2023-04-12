@@ -731,6 +731,7 @@ FROM T004Alertas WHERE T004transferido=0""")
             print("row 1", row[1])
             print("row 2", row[2])
             print("row 3", row[3])
+            print("row 4", row[4])
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
             WHERE T004descripcion = %s
             AND T004fecha = %s AND
