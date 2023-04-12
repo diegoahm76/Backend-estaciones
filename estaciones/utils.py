@@ -726,6 +726,7 @@ FROM T004Alertas WHERE T004transferido=0""")
         data_parametros = cursor.fetchall()
         print("data parametros ", data_parametros)
         for row in data_parametros:  # Recorrer cada fila de los resultados
+            print("row", row)
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
             WHERE T004descripcion = %s
             AND T004fecha = %s AND
@@ -748,7 +749,7 @@ FROM T004Alertas WHERE T004transferido=0""")
             WHEN T004descripcion LIKE '%precipitacion%' THEN 'precipitacion'
             WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua'
             WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
-            END) = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3], row[4]))
+            END) = %s AND OBJECTID = %s""", (row[0], row[1], row[2]))
 
  # Actualizar una fila de la tabla
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
