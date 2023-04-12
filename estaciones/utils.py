@@ -495,7 +495,7 @@ def envio_alertas(data):
             alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
     if len(conf_alarma_tmp) > 0:
         if registro[9] < parametro_estacion[0][18]:
-            
+
             mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
             print("Mensaje min", mensaje_min)
             # estructura HTML para el mensaje
@@ -514,13 +514,14 @@ def envio_alertas(data):
 
             for persona in personas:
                 print("Entro al for")
-                print("Persona 4",persona[4])
-                print("Persona 1",persona[1])
-                print("Persona 2",persona[2])
+                print("Persona 4", persona[4])
+                print("Persona 1", persona[1])
+                print("Persona 2", persona[2])
                 print("Nombre estacion", nombre_estacion)
                 print("Mensaje Min", mensaje_min)
-                print("sms",persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
-                
+                print(
+                    "sms", persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
+
                 sms = f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}'
                 send_sms(persona[4], sms)
                 print("envio sms min")
@@ -823,7 +824,7 @@ def transfer_data():
     try:
         print("Entro a la migracion")
         # datos_estacion = get_data_from_sql_server_estaciones()  # Obtener datos de SQL Server
-        data = get_data_from_sql_server_datos()  # Obtener datos de SQL Server
+        # data = get_data_from_sql_server_datos()  # Obtener datos de SQL Server
         # Obtener datos de SQL Server
         # data_parametros = get_data_from_sql_server_parametros()
         data_alertas = get_data_from_sql_server_alertas()  # Obtener datos de SQL Server
@@ -832,9 +833,9 @@ def transfer_data():
         #     insert_data_into_postgresql_estaciones(
         #         datos_estacion)  # Ins
 
-        if data:  # Si hay datos
-            # Insertar datos en PostgreSQLertar datos en PostgreSQL
-            insert_data_into_postgresql_datos(data)
+        # if data:  # Si hay datos
+        #     # Insertar datos en PostgreSQLertar datos en PostgreSQL
+        #     insert_data_into_postgresql_datos(data)
 
         # if data_parametros:  # Si hay datos
         #     insert_data_into_postgresql_parametros(
@@ -846,10 +847,9 @@ def transfer_data():
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 
-
-# schedule.every(1).minutes.do(transfer_data)
-# schedule.every(1).minutes.do(enviar_alertas)
-schedule.every(1).minutes.do(test_cronjob)
+    schedule.every(1).minutes.do(transfer_data)
+#   schedule.every(1).minutes.do(enviar_alertas)
+#   schedule.every(1).minutes.do(test_cronjob)
 
 
 while True:  # Ciclo principal del programa
