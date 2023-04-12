@@ -495,6 +495,7 @@ def envio_alertas(data):
             alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
     if len(conf_alarma_tmp) > 0:
         if registro[9] < parametro_estacion[0][18]:
+            
             mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
             print("Mensaje min", mensaje_min)
             # estructura HTML para el mensaje
@@ -518,12 +519,10 @@ def envio_alertas(data):
                 print("Persona 2",persona[2])
                 print("Nombre estacion", nombre_estacion)
                 print("Mensaje Min", mensaje_min)
-                print("sms",
-                    persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
+                print("sms",persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
                 
                 sms = f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}'
-                send_sms(
-                    persona[4], sms)
+                #send_sms(persona[4], sms)
                 print("envio sms min")
 
                 # print("PERSONA: ", persona)
