@@ -28,6 +28,7 @@ def send_sms(phone, sms):
         'Content-Type': 'application/json', 
         'Authorization': 'Basic ' + AUTHENTICATION_360_NRS
         }
+        print("Headers",headers)
         print("paso header")
         print("Response",requests.request("POST", url, headers=headers, data=payload.encode("utf-8")))
         response = requests.request("POST", url, headers=headers, data=payload.encode("utf-8"))
