@@ -749,7 +749,8 @@ FROM T004Alertas WHERE T004transferido=0""")
                     WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua' 
                     WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua' 
                 END) = %s AND OBJECTID = %s""",
-               (row[0], row[1], row[2]))
+               (row[0], row[1], row[2], row[3]))
+
  # Actualizar una fila de la tabla
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
         cursor.close()  # Cerrar el cursor
