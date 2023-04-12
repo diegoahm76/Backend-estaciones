@@ -25,6 +25,8 @@ def send_sms(phone, sms):
         payload = "{ \"to\": [\"" + telefono + "\"], \"from\": \"TEST\", \"message\": \"" + mensaje + "\" }"
         print("PAYLOAD",payload)
         print("Paso payload")
+
+        print("AUTHENTICATION_360_NRS", AUTHENTICATION_360_NRS)
         headers = {
         'Content-Type': 'application/json', 
         'Authorization': 'Basic ' + AUTHENTICATION_360_NRS
