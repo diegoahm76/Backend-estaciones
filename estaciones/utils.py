@@ -812,8 +812,31 @@ def prueba_mensaje():
     print(msg)
     return msg
 
+def enviar_alertas():
+    try:
+        # Conectarse a la base de datos SQL Server
+        conn_sql_server = connect_to_sql_server()
+        print("Conectado a SQL Server")
+        cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
+        cursor.execute('SELECT TOP 200 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
+        data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
+        # Convertir data a una cadena de texto para evitar la concatenación con un valor nulo
+        print("Datos obtenidos:", str(data))
+        envio_alertas(data)
+        conn_sql_server.commit()  # Confirmar los cambios en la base de datos
+        print("Datos actualizados")
+        cursor.close()  # Cerrar el cursor
+        conn_sql_server.close()  # Cerrar la conexión
+        print("Conexión cerrada")
+        return data
+    except Exception as e:
+        print(f"Ha ocurrido un error al obtener los datos de datos: {e}")
+        return None
+
 # Programar la tarea de transferir datos cada minuto
 schedule.every(1).minutes.do(prueba_mensaje)
+# Programar la tarea de transferir datos cada minuto
+schedule.every(1).minutes.do(enviar_alertas)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
