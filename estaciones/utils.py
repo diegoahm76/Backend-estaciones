@@ -513,6 +513,11 @@ def envio_alertas(data):
 
             for persona in personas:
                 print("Entro al for")
+                print("Persona 4",persona[4])
+                print("Persona 1",persona[1])
+                print("Persona 2",persona[2])
+                print("Nombre estacion", nombre_estacion)
+                print("Mensaje Min", mensaje_min)
                 print("sms",
                     persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
                 
