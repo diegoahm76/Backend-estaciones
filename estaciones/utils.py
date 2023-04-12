@@ -513,8 +513,9 @@ def envio_alertas(data):
 
             for persona in personas:
                 send_sms(
-                    persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
+                    persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
                 print("envio sms min")
+
                 # print("PERSONA: ", persona)
                 # print("MSG: ", mensaje_min)
                 data = {'template': mensaje_html,
