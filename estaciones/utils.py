@@ -719,14 +719,14 @@ def get_data_from_sql_server_alertas():
         WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
     END AS T004palabra ,
     OBJECTID
-FROM T004Alertas WHERE T004transferido=0""")
+FROM T004Alertas WHERE T004transferido=1""")
 
    # Ejecutar una consulta SQL
         # Recuperar todos los resultados de la consulta
         data_parametros = cursor.fetchall()
         print("data parametros ", data_parametros)
         # Actualizar los registros con T004transferido=0 a T004transferido=1
-        update_query = """UPDATE T004Alertas SET T004transferido=1 WHERE T004transferido=0 AND OBJECTID IN ("""
+        update_query = """UPDATE T004Alertas SET T004transferido=0 WHERE T004transferido=1 AND OBJECTID IN ("""
         for i in range(len(data_parametros)):
             if i == len(data_parametros) - 1:
                 update_query += str(data_parametros[i][3]) + ")"
