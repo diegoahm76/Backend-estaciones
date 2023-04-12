@@ -496,6 +496,7 @@ def envio_alertas(data):
     if len(conf_alarma_tmp) > 0:
         if registro[9] < parametro_estacion[0][18]:
             mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
+            print("Mensaje min", mensaje_min)
             # estructura HTML para el mensaje
             mensaje_html = f"""
                 <html>
@@ -508,6 +509,7 @@ def envio_alertas(data):
             </html>
             """
             Asunto = 'Alarma!!'
+            print("Paso Html")
 
             for persona in personas:
                 send_sms(
@@ -520,6 +522,7 @@ def envio_alertas(data):
 
         elif registro[9] > parametro_estacion[0][17]:
             mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
+            print("Mensaje max", mensaje_max)
             mensaje_html_max = f"""
                 <html>
                 <head></head>
@@ -771,6 +774,7 @@ def get_data_from_postgresql():
     return True
     print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
     return False
+
 
 def enviar_alertas():
     try:
