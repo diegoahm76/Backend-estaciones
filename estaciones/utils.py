@@ -719,22 +719,38 @@ def get_data_from_sql_server_alertas():
         WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
     END AS T004palabra ,
     OBJECTID
-FROM T004Alertas WHERE T004transferido=1""")
+FROM T004Alertas WHERE T004transferido=0""")
 
    # Ejecutar una consulta SQL
         # Recuperar todos los resultados de la consulta
         data_parametros = cursor.fetchall()
         print("data parametros ", data_parametros)
-        # Actualizar los registros con T004transferido=0 a T004transferido=1
-        update_query = """UPDATE T004Alertas SET T004transferido=0 WHERE T004transferido=1 AND OBJECTID IN ("""
-        for i in range(len(data_parametros)):
-            if i == len(data_parametros) - 1:
-                update_query += str(data_parametros[i][3]) + ")"
-            else:
-                update_query += str(data_parametros[i][3]) + ","
-        cursor.execute(update_query)
-        conn_sql_server.commit()
-  # Confirmar los cambios en la base de datos
+        for row in data_parametros:  # Recorrer cada fila de los resultados
+            cursor.execute("""UPDATE T004Alertas SET T004transferido = 1 
+                WHERE T004descripcion = %s 
+                AND T004fecha = %s AND 
+                (CASE 
+                    WHEN T004descripcion LIKE '%Conversor 1 RS485%' THEN 'Conversor 1 RS485'
+		WHEN T004descripcion LIKE '%Conversor RS485%' THEN 'Conversor RS485'
+        WHEN T004descripcion LIKE '%sensor meteorologico%' THEN 'sensor meteorologico'
+        WHEN T004descripcion LIKE '%sensor radar%' THEN 'sensor radar'
+		WHEN T004descripcion LIKE '%luminosidad%' THEN 'luminosidad'
+        WHEN T004descripcion LIKE '%Voltaje%' THEN 'Voltaje'
+        WHEN T004descripcion LIKE '%ángulo%' THEN 'ángulo'
+        WHEN T004descripcion LIKE '%Paneles%' THEN 'Paneles'
+        WHEN T004descripcion LIKE '%Baterías%' THEN 'Baterías'
+        WHEN T004descripcion LIKE '%Conversor 0 RS485%' THEN 'Conversor 0 RS485'
+        WHEN T004descripcion LIKE '%temperatura%' THEN 'temperatura' 
+        WHEN T004descripcion LIKE '%humedad%' THEN 'humedad' 
+        WHEN T004descripcion LIKE '%presión%' THEN 'presión' 
+        WHEN T004descripcion LIKE '%velocidad del viento%' THEN 'velocidad del viento' 
+        WHEN T004descripcion LIKE '%dirección del viento%' THEN 'dirección del viento' 
+        WHEN T004descripcion LIKE '%precipitacion%' THEN 'precipitacion' 
+        WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua' 
+        WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua' 
+                END) = %s AND OBJECTID = %s""", (row))
+ # Actualizar una fila de la tabla
+        conn_sql_server.commit()  # Confirmar los cambios en la base de datos
         cursor.close()  # Cerrar el cursor
         conn_sql_server.close()  # Cerrar la conexión
         print("ENTRA GET DATA FROM ALERTAS")
