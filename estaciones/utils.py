@@ -493,62 +493,62 @@ def envio_alertas(data):
         # VALIDAR SI GENERAR ALERTA NIVEL DEL AGUA
         conf_alarma_tmp = [
             alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
-        if len(conf_alarma_tmp) > 0:
-            if registro[9] < parametro_estacion[0][18]:
-                mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m'
-                # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de nivel de agua </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto = 'Alarma!!'
+    if len(conf_alarma_tmp) > 0:
+        if registro[9] < parametro_estacion[0][18]:
+            mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
+            # estructura HTML para el mensaje
+            mensaje_html = f"""
+                <html>
+                <head></head>
+                    <body>
+                        <h3>Alerta de nivel de agua </h3>
+                        <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
+                        <p> {mensaje_min} </p>
+                </body>
+            </html>
+            """
+            Asunto = 'Alarma!!'
 
-                for persona in personas:
-                    send_sms(
-                        persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
-                    # print("PERSONA: ", persona)
-                    # print("MSG: ", mensaje_min)
-                    data = {'template': mensaje_html,
-                            'email_subject': Asunto, 'to_email': persona[3]}
-                    send_email(data)
+            for persona in personas:
+                send_sms(
+                    persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
+                # print("PERSONA: ", persona)
+                # print("MSG: ", mensaje_min)
+                data = {'template': mensaje_html,
+                        'email_subject': Asunto, 'to_email': persona[3]}
+                send_email(data)
 
-            elif registro[9] > parametro_estacion[0][17]:
-                mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de nivel de agua </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
-                for persona in personas:
-                    # print("PERSONA: ", persona)
-                    # print("MSG: ", mensaje_max)
-                    send_sms(
-                        persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_html_max,
-                            'email_subject': 'Alarma', 'to_email': persona[3]}
-                    send_email(data)
-            else:
-                # mensaje_no = conf_alarma_tmp[0][3]
-                # for persona in personas:
-                #     send_sms(persona[4],mensaje_no)
-
-                #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
-                #     send_email(data)
-                pass
+        elif registro[9] > parametro_estacion[0][17]:
+            mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
+            mensaje_html_max = f"""
+                <html>
+                <head></head>
+                    <body>
+                        <h3>Alerta de nivel de agua </h3>
+                        <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
+                        <p> {mensaje_max} </p>
+                </body>
+            </html>
+            """
+            for persona in personas:
+                # print("PERSONA: ", persona)
+                # print("MSG: ", mensaje_max)
+                send_sms(
+                    persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
+                data = {'template': mensaje_html_max,
+                        'email_subject': 'Alarma', 'to_email': persona[3]}
+                send_email(data)
         else:
-            # En caso de que no haya alarmas, no hacemos nada
+            # mensaje_no = conf_alarma_tmp[0][3]
+            # for persona in personas:
+            #     send_sms(persona[4],mensaje_no)
+
+            #     data = {'template': mensaje_no, 'email_subject': 'Alarma', 'to_email': persona[3]}
+            #     send_email(data)
             pass
+    else:
+        # En caso de que no haya alarmas, no hacemos nada
+        pass
 
     return "Envio exitoso"
 
@@ -767,10 +767,31 @@ def get_data_from_postgresql():
     cursor.execute('SELECT TOP 1000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')
     # Recuperar todos los resultados de la consulta
     datos_data = cursor.fetchall()
-    # envio_alertas(datos_data)
+    envio_alertas(datos_data)
     return True
     print(f"Ha ocurrido un error al obtener los datos de estaciones: {e}")
     return False
+
+def enviar_alertas():
+    try:
+        # Conectarse a la base de datos SQL Server
+        conn_sql_server = connect_to_sql_server()
+        print("Conectado a SQL Server")
+        cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
+        cursor.execute('SELECT TOP 200 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
+        data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
+        # Convertir data a una cadena de texto para evitar la concatenación con un valor nulo
+        print("Datos obtenidos:", str(data))
+        envio_alertas(data)
+        conn_sql_server.commit()  # Confirmar los cambios en la base de datos
+        print("Datos actualizados")
+        cursor.close()  # Cerrar el cursor
+        conn_sql_server.close()  # Cerrar la conexión
+        print("Conexión cerrada")
+        return data
+    except Exception as e:
+        print(f"Ha ocurrido un error al obtener los datos de datos: {e}")
+        return None
 
 
 def enviar_aleryas():
@@ -808,11 +829,9 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(1).minutes.do(transfer_data)
+schedule.every(1).minutes.do(enviar_alertas)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
     time.sleep(1)
-
-PRUEBA
