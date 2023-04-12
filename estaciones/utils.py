@@ -846,14 +846,10 @@ def transfer_data():
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 
-def prueb_hola_mundo():
-    msg= "Hola Mundo"
-    return msg
-
 
 # schedule.every(1).minutes.do(transfer_data)
 # schedule.every(1).minutes.do(enviar_alertas)
-schedule.every(1).minutes.do(prueb_hola_mundo)
+schedule.every(1).minutes.do(test_cronjob)
 
 
 while True:  # Ciclo principal del programa
