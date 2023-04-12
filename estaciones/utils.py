@@ -807,8 +807,13 @@ def transfer_data():
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 
+def prueba_mensaje():
+    msg="Hola Mundo Prueba 2, este es el nuevo mensaje"
+    print(msg)
+    return msg
 
-schedule.every(1).minutes.do(transfer_data)
+# Programar la tarea de transferir datos cada minuto
+schedule.every(1).minutes.do(prueba_mensaje)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
