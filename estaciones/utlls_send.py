@@ -33,10 +33,10 @@ def send_sms(phone, sms):
         'Content-Type': 'application/json', 
         'Authorization': 'Basic ' + AUTHENTICATION_360_NRS
         }
-        
+        print("Paso Headers")
         response = requests.request("POST", url, headers=headers, data=payload)
-
-        print(response.text)
+        print("response",response)
+        print("response text",response.text)
 
 #Envio de whatsapp
 # def send_whatsapp_message(phone_numbers, message):
