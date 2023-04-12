@@ -27,6 +27,8 @@ def send_sms(phone, sms):
         payload = {"to": [telefono], "from": "TEST", "message": mensaje}
         payload = json.dumps(payload).encode('utf-8')
 
+        print("payload", payload)
+
         headers = {
         'Content-Type': 'application/json', 
         'Authorization': 'Basic ' + AUTHENTICATION_360_NRS
