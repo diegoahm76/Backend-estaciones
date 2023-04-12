@@ -19,24 +19,33 @@ def send_sms(phone, sms):
         telefono = phone
         mensaje = sms
         telefono = telefono.replace("+","")
+        print("SMS: ", mensaje)
         print(telefono)
         print(len(sms))
-        print("sms", mensaje)
-    
-
-        payload = {"to": [telefono], "from": "TEST", "message": mensaje}
-        payload = json.dumps(payload).encode('utf-8')
-
-        print("payload", payload)
-
+        payload = "{ \"to\": [\"" + telefono + "\"], \"from\": \"TEST\", \"message\": \"" + mensaje + "\" }"
+        print("PAYLOAD",payload)
         headers = {
         'Content-Type': 'application/json', 
         'Authorization': 'Basic ' + AUTHENTICATION_360_NRS
         }
-        print("Paso Headers")
-        response = requests.request("POST", url, headers=headers, data=payload)
-        print("response",response)
-        print("response text",response.text)
+        
+        # account_sid = os.environ['TWILIO_ACCOUNT_SID']
+        # auth_token = os.environ['TWILIO_AUTH_TOKEN']    
+        # client = Client(account_sid, auth_token)
+        # # this is the Twilio sandbox testing number
+        # from_whatsapp_number='whatsapp:+14155238886'
+        # # replace this number with your own WhatsApp Messaging number
+        # to_whatsapp_number='whatsapp:+' + telefono
+
+        # client.messages.create(body='Ingresó en Cormacarena-bia',
+        #                     from_=from_whatsapp_number,
+        #                     to=to_whatsapp_number)
+
+
+        response = requests.request("POST", url, headers=headers, data=payload.encode("utf-8"))
+
+        print(response.text)
+        #client.messages.create(messaging_service_sid=TWILIO_MESSAGING_SERVICE_SID, body=sms, from_=PHONE_NUMBER, to=phone)
 
 #Envio de whatsapp
 # def send_whatsapp_message(phone_numbers, message):
