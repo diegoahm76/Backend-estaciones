@@ -732,8 +732,8 @@ FROM T004Alertas WHERE T004transferido=0""")
             print("row 2", row[2])
             print("row 3", row[3])
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
-            WHERE T004descripcion = %s
-            AND T004fecha = %s AND
+            WHERE T004descripcion = ?
+            AND T004fecha = ? AND
             (CASE
             WHEN T004descripcion LIKE '%Conversor 1 RS485%' THEN 'Conversor 1 RS485'
             WHEN T004descripcion LIKE '%Conversor RS485%' THEN 'Conversor RS485'
@@ -753,7 +753,7 @@ FROM T004Alertas WHERE T004transferido=0""")
             WHEN T004descripcion LIKE '%precipitacion%' THEN 'precipitacion'
             WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua'
             WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
-            END) = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3]))
+            END) = ? AND OBJECTID = ?""", (row[0], row[1], row[2], row[3]))
 
  # Actualizar una fila de la tabla
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
