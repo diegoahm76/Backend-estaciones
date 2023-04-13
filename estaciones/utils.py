@@ -650,7 +650,7 @@ def get_data_from_sql_server_datos():
         conn_sql_server = connect_to_sql_server()
         print("Conectado a SQL Server")
         cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-        cursor.execute('SELECT TOP 5000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
+        cursor.execute('SELECT TOP 500 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         # Convertir data a una cadena de texto para evitar la concatenación con un valor nulo
        
@@ -870,7 +870,7 @@ def transfer_data_alertas():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(3).minutes.do(transfer_data_datos)
+schedule.every(1).minutes.do(transfer_data_datos)
 # # schedule.every(3).minutes.do(enviar_alertas)
 #schedule.every(3).minutes.do(transfer_data_alertas)
 
@@ -878,4 +878,4 @@ schedule.every(3).minutes.do(transfer_data_datos)
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(3)
+    time.sleep(1)
