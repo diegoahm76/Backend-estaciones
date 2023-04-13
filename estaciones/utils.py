@@ -862,8 +862,8 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(3).minutes.do(transfer_data)
-schedule.every(3).minutes.do(enviar_alertas)
+# schedule.every(3).minutes.do(transfer_data)
+# schedule.every(3).minutes.do(enviar_alertas)
 schedule.every(3).minutes.do(test_cronjob)
 
 
