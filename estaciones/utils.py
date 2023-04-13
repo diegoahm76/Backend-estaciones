@@ -753,7 +753,7 @@ FROM T004Alertas WHERE T004transferido=0""")
                 WHEN T004descripcion LIKE '%precipitacion%' THEN 'precipitacion'
                 WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua'
                 WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
-                END) = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3], row[2]))
+                END AS T004palabra) = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3], row[2]))
 
         conn_sql_server.commit()
         cursor.close()
