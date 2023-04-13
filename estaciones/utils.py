@@ -537,7 +537,7 @@ def envio_alertas(data):
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
                     id_persona = int(persona[0]) # tipo de dato: integer
-                    mensaje = mensaje_max # tipo de dato: string
+                    mensaje = mensaje_min # tipo de dato: string
                     estacion = int(id_estacion) # tipo de dato: integer
 
                     data_historial = [fecha_actual, mensaje, correo, telefono, estacion, id_persona]
@@ -862,12 +862,12 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-# schedule.every(3).minutes.do(transfer_data)
-# schedule.every(3).minutes.do(enviar_alertas)
-schedule.every(3).minutes.do(test_cronjob)
+# schedule.every(1).minutes.do(transfer_data)
+schedule.every(1).minutes.do(enviar_alertas)
+# schedule.every(1).minutes.do(test_cronjob)
 
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(3)
+    time.sleep(1)
