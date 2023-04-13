@@ -725,7 +725,7 @@ FROM T004Alertas WHERE T004transferido=0""")
         # Recuperar todos los resultados de la consulta
         data_parametros = cursor.fetchall()
         print("data parametros ", data_parametros)
-        for row in data_parametros:  # Recorrer cada fila de los resultados
+        for row in data_parametros:
             print("row 0", row)
             print("row 0", row[0])
             print("row 1", row[1])
@@ -753,14 +753,15 @@ FROM T004Alertas WHERE T004transferido=0""")
                 WHEN T004descripcion LIKE '%precipitacion%' THEN 'precipitacion'
                 WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua'
                 WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
-                END) = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3]))
+                END) = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3], row[2]))
 
- # Actualizar una fila de la tabla
-        conn_sql_server.commit()  # Confirmar los cambios en la base de datos
-        cursor.close()  # Cerrar el cursor
-        conn_sql_server.close()  # Cerrar la conexión
+        conn_sql_server.commit()
+        cursor.close()
+        conn_sql_server.close()
         print("ENTRA GET DATA FROM ALERTAS")
         return data_parametros
+
+
         pass
     except Exception as e:
         print(f"Ha ocurrido un error al obtener los datos de alertas: {e}")
