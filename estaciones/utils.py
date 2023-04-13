@@ -733,7 +733,7 @@ FROM T004Alertas WHERE T004transferido=0""")
             print("row 3", row[3])
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
                 WHERE T004descripcion = %s
-                AND T004fecha = %s AND T004palabra = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3], row[2]))
+                AND T004fecha = %s AND OBJECTID = %s""", (row[0], row[1], row[3]))
 
         conn_sql_server.commit()
         cursor.close()
