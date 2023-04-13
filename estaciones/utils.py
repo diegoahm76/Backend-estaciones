@@ -32,10 +32,26 @@ def conn_postgresq():
                             database=os.environ['BIA_ESTACIONES_NAME'], user=os.environ['BIA_ESTACIONES_USER'],
                             password=os.environ['BIA_ESTACIONES_PASSWORD'])
 
+def insert_data_into_postgresql_historial(data_historial):
+    print("Entro a la conexion")
+    try:
+        # Conectarse a la base de datos PostgreSQL
+        conn_postgresql = conn_postgresq()
+        cursor = conn_postgresql.cursor()
+        print("Conexión establecida con éxito.")
+        cursor.execute('INSERT INTO "T907HistorialAlarmasEnviadas_PorEstacion" ("T907fechaHoraEnvio", "T907mensajeEnviado", "T907dirEmailEnviado", "T907nroCelularEnviado", "T907Id_Estacion", "T907Id_PersonaEstaciones") VALUES (%s,%s,%s,%s,%s,%s)', data_historial)  # Insertar varias filas en la tabla
+        conn_postgresql.commit()  # Confirmar los cambios en la base de datos
+        cursor.close()  # Cerrar el cursor
+        conn_postgresql.close()  # Cerrar la conexión
+        print("Paso Auditoria")
+        pass
+    except Exception as e:
+        print(f"Ha ocurrido un error al insertar los datos de estaciones: {e}")
 
 def envio_alertas(data):
 
     conn_postgresql = conn_postgresq()
+    print("Conexion exitosa")
     cursor = conn_postgresql.cursor()
     query_estacion = 'SELECT "T900IdEstacion", "T900nombreEstacion" FROM "T900Estaciones";'
     cursor.execute(query_estacion)
@@ -515,23 +531,28 @@ def envio_alertas(data):
             print("Paso Html min")
 
             for persona in personas:
-                fecha_actual = datetime.date.today()
-                correo = persona[3]
-                telefono = persona[4]
-                id_persona =persona[0]
+                    now = datetime.datetime.now()
+                    fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
+                    print("Fecha", fecha_actual)
+                    correo = persona[3] # tipo de dato: string
+                    telefono = persona[4] # tipo de dato: string
+                    id_persona = int(persona[0]) # tipo de dato: integer
+                    mensaje = mensaje_max # tipo de dato: string
+                    estacion = int(id_estacion) # tipo de dato: integer
 
-                data_historial = [fecha_actual, mensaje_min, correo, telefono, id_estacion, id_persona]
-                print(data_historial)
-                sms = f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}'
-                send_sms(persona[4], sms)
-                print("envio sms min")
+                    data_historial = [fecha_actual, mensaje, correo, telefono, estacion, id_persona]
+                
+                    insert_data_into_postgresql_historial(data_historial)
+                    sms = f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}'
+                    send_sms(persona[4], sms)
+                    print("envio sms min")
 
-                # print("PERSONA: ", persona)
-                # print("MSG: ", mensaje_min)
-                data = {'template': mensaje_html,
-                        'email_subject': Asunto, 'to_email': persona[3]}
-                send_email(data)
-                print("envio email min")
+                    # print("PERSONA: ", persona)
+                    # print("MSG: ", mensaje_min)
+                    data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+                    send_email(data)
+                    print("envio email min")
+
         elif registro[9] > parametro_estacion[0][17]:
             mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
             print("Mensaje max sms", mensaje_max)
@@ -547,8 +568,18 @@ def envio_alertas(data):
             """
             print("Paso Html max")
             for persona in personas:
-                # print("PERSONA: ", persona)
-                # print("MSG: ", mensaje_max)
+                now = datetime.datetime.now()
+                fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
+                print("Fecha", fecha_actual)
+                correo = persona[3] # tipo de dato: string
+                telefono = persona[4] # tipo de dato: string
+                id_persona = int(persona[0]) # tipo de dato: integer
+                mensaje = mensaje_max # tipo de dato: string
+                estacion = int(id_estacion) # tipo de dato: integer
+
+                data_historial = [fecha_actual, mensaje, correo, telefono, estacion, id_persona]
+               
+                insert_data_into_postgresql_historial(data_historial)
                 send_sms(
                     persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
                 print("envio sms min")
@@ -569,22 +600,6 @@ def envio_alertas(data):
         pass
 
     return "Envio exitoso"
-
-def insert_data_into_postgresql_historial(data):
-
-    try:
-        # Conectarse a la base de datos PostgreSQL
-        conn_postgresql = conn_postgresq()
-        cursor = conn_postgresql.cursor()  # Crear un cursor para realizar consultas
-        cursor.executemany('INSERT INTO "T907HistorialAlarmasEnviadas_PorEstacion" ("T907fechaHoraEnvio", "T907mensajeEnviado", "T907dirEmailEnviado", "T907nroCelularEnviado", "T907Id_Estacion", "T907Id_PersonaEstaciones") VALUES (%s,%s,%s,%s,%s,%s)',
-                           data)  # Insertar varias filas en la tabla
-        conn_postgresql.commit()  # Confirmar los cambios en la base de datos
-        cursor.close()  # Cerrar el cursor
-        conn_postgresql.close()  # Cerrar la conexión
-        print("Paso Auditoria")
-        pass
-    except Exception as e:
-        print(f"Ha ocurrido un error al insertar los datos de estaciones: {e}")
 
 
 def get_data_from_sql_server_estaciones():
@@ -618,7 +633,7 @@ def insert_data_into_postgresql_estaciones(datos_estacion):
         # Conectarse a la base de datos PostgreSQL
         conn_postgresql = conn_postgresq()
         cursor = conn_postgresql.cursor()  # Crear un cursor para realizar consultas
-        cursor.executemany('INSERT INTO "T900Estaciones" ("T900fechaModificacion", "T900nombreEstacion", "T900latitud", "T900longitud") VALUES (%s,%s,%s,%s)',
+        cursor.execute('INSERT INTO "T900Estaciones" ("T900fechaModificacion", "T900nombreEstacion", "T900latitud", "T900longitud") VALUES (%s,%s,%s,%s)',
                            datos_estacion)  # Insertar varias filas en la tabla
         conn_postgresql.commit()  # Confirmar los cambios en la base de datos
         cursor.close()  # Cerrar el cursor
@@ -823,7 +838,7 @@ def transfer_data():
     try:
         print("Entro a la migracion")
         # datos_estacion = get_data_from_sql_server_estaciones()  # Obtener datos de SQL Server
-        # data = get_data_from_sql_server_datos()  # Obtener datos de SQL Server
+        data = get_data_from_sql_server_datos()  # Obtener datos de SQL Server
         # Obtener datos de SQL Server
         # data_parametros = get_data_from_sql_server_parametros()
         data_alertas = get_data_from_sql_server_alertas()  # Obtener datos de SQL Server
@@ -832,9 +847,9 @@ def transfer_data():
         #     insert_data_into_postgresql_estaciones(
         #         datos_estacion)  # Ins
 
-        # if data:  # Si hay datos
-        #     # Insertar datos en PostgreSQLertar datos en PostgreSQL
-        #     insert_data_into_postgresql_datos(data)
+        if data:  # Si hay datos
+            # Insertar datos en PostgreSQLertar datos en PostgreSQL
+            insert_data_into_postgresql_datos(data)
 
         # if data_parametros:  # Si hay datos
         #     insert_data_into_postgresql_parametros(
@@ -847,12 +862,12 @@ def transfer_data():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(1).minutes.do(transfer_data)
-# chedule.every(1).minutes.do(enviar_alertas)
-schedule.every(1).minutes.do(test_cronjob)
+schedule.every(3).minutes.do(transfer_data)
+schedule.every(3).minutes.do(enviar_alertas)
+schedule.every(3).minutes.do(test_cronjob)
 
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(1)
+    time.sleep(3)
