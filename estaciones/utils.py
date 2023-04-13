@@ -650,7 +650,7 @@ def get_data_from_sql_server_datos():
         conn_sql_server = connect_to_sql_server()
         print("Conectado a SQL Server")
         cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-        cursor.execute('SELECT TOP 1000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
+        cursor.execute('SELECT TOP 5000 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         # Convertir data a una cadena de texto para evitar la concatenación con un valor nulo
        
