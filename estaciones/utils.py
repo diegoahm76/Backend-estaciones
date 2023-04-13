@@ -872,12 +872,12 @@ def transfer_data_alertas():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(1).minutes.do(transfer_data_datos)
-# schedule.every(1).minutes.do(enviar_alertas)
-# schedule.every(1).minutes.do(transfer_data_alertas)
+# schedule.every(1).minutes.do(transfer_data_datos)
+# # schedule.every(1).minutes.do(enviar_alertas)
+# # schedule.every(1).minutes.do(transfer_data_alertas)
 
 
-while True:  # Ciclo principal del programa
-    schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
-    # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
-    time.sleep(1)
+# while True:  # Ciclo principal del programa
+#     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
+#     # Dormir el programa durante un segundo para evitar un uso excesivo de CPU
+#     time.sleep(1)
