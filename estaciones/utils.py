@@ -848,7 +848,7 @@ def transfer_data():
 
 
 schedule.every(1).minutes.do(transfer_data)
-schedule.every(1).minutes.do(enviar_alertas)
+# chedule.every(1).minutes.do(enviar_alertas)
 schedule.every(1).minutes.do(test_cronjob)
 
 
