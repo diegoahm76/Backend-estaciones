@@ -733,27 +733,7 @@ FROM T004Alertas WHERE T004transferido=0""")
             print("row 3", row[3])
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
                 WHERE T004descripcion = %s
-                AND T004fecha = %s AND
-                (CASE
-                WHEN T004descripcion LIKE '%Conversor 1 RS485%' THEN 'Conversor 1 RS485'
-                WHEN T004descripcion LIKE '%Conversor RS485%' THEN 'Conversor RS485'
-                WHEN T004descripcion LIKE '%sensor meteorologico%' THEN 'sensor meteorologico'
-                WHEN T004descripcion LIKE '%sensor radar%' THEN 'sensor radar'
-                WHEN T004descripcion LIKE '%luminosidad%' THEN 'luminosidad'
-                WHEN T004descripcion LIKE '%Voltaje%' THEN 'Voltaje'
-                WHEN T004descripcion LIKE '%ángulo%' THEN 'ángulo'
-                WHEN T004descripcion LIKE '%Paneles%' THEN 'Paneles'
-                WHEN T004descripcion LIKE '%Baterías%' THEN 'Baterías'
-                WHEN T004descripcion LIKE '%Conversor 0 RS485%' THEN 'Conversor 0 RS485'
-                WHEN T004descripcion LIKE '%temperatura%' THEN 'temperatura'
-                WHEN T004descripcion LIKE '%humedad%' THEN 'humedad'
-                WHEN T004descripcion LIKE '%presión%' THEN 'presión'
-                WHEN T004descripcion LIKE '%velocidad del viento%' THEN 'velocidad del viento'
-                WHEN T004descripcion LIKE '%dirección del viento%' THEN 'dirección del viento'
-                WHEN T004descripcion LIKE '%precipitacion%' THEN 'precipitacion'
-                WHEN T004descripcion LIKE '%nivel del agua%' THEN 'nivel del agua'
-                WHEN T004descripcion LIKE '%velocidad del agua%' THEN 'velocidad del agua'
-                END AS T004palabra) = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3], row[2]))
+                AND T004fecha = %s AND T004palabra = %s AND OBJECTID = %s""", (row[0], row[1], row[2], row[3], row[2]))
 
         conn_sql_server.commit()
         cursor.close()
