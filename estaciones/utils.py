@@ -5,6 +5,7 @@ import psycopg2  # importar el módulo psycopg2 para conectarse a la base de dat
 import os
 from estaciones.utlls_send import send_email, send_sms
 from estaciones.cron import test_cronjob
+import datetime
 
 # Conexión a SQL Server
 
@@ -65,6 +66,7 @@ def envio_alertas(data):
             estaciones for estaciones in resultado_estacion if estaciones[0] == estacion]
         for estacion in estacion_result:
             nombre_estacion = estacion[1]
+            id_estacion= estacion[0]
             # print(nombre_estacion)
         # # VALIDAR SI GENERAR ALERTA TEMPERATURA
         # conf_alarma_tmp = [
@@ -495,7 +497,7 @@ def envio_alertas(data):
             alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
     if len(conf_alarma_tmp) > 0:
         if registro[9] < parametro_estacion[0][18]:
-
+            
             mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
             print("Mensaje min", mensaje_min)
             # estructura HTML para el mensaje
@@ -513,15 +515,13 @@ def envio_alertas(data):
             print("Paso Html min")
 
             for persona in personas:
-                print("Entro al for")
-                print("Persona 4", persona[4])
-                print("Persona 1", persona[1])
-                print("Persona 2", persona[2])
-                print("Nombre estacion", nombre_estacion)
-                print("Mensaje Min", mensaje_min)
-                print(
-                    "sms", persona[4], f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}')
+                fecha_actual = datetime.date.today()
+                correo = persona[3]
+                telefono = persona[4]
+                id_persona =persona[0]
 
+                data_historial = [fecha_actual, mensaje_min, correo, telefono, id_estacion, id_persona]
+                print(data_historial)
                 sms = f'{persona[1] or ""} {persona[2] or ""}\n Alerta nivel de agua \n La estacion {nombre_estacion or ""} emitio una alerta:\n{mensaje_min or ""}'
                 send_sms(persona[4], sms)
                 print("envio sms min")
@@ -569,6 +569,22 @@ def envio_alertas(data):
         pass
 
     return "Envio exitoso"
+
+def insert_data_into_postgresql_historial(data):
+
+    try:
+        # Conectarse a la base de datos PostgreSQL
+        conn_postgresql = conn_postgresq()
+        cursor = conn_postgresql.cursor()  # Crear un cursor para realizar consultas
+        cursor.executemany('INSERT INTO "T907HistorialAlarmasEnviadas_PorEstacion" ("T907fechaHoraEnvio", "T907mensajeEnviado", "T907dirEmailEnviado", "T907nroCelularEnviado", "T907Id_Estacion", "T907Id_PersonaEstaciones") VALUES (%s,%s,%s,%s,%s,%s)',
+                           data)  # Insertar varias filas en la tabla
+        conn_postgresql.commit()  # Confirmar los cambios en la base de datos
+        cursor.close()  # Cerrar el cursor
+        conn_postgresql.close()  # Cerrar la conexión
+        print("Paso Auditoria")
+        pass
+    except Exception as e:
+        print(f"Ha ocurrido un error al insertar los datos de estaciones: {e}")
 
 
 def get_data_from_sql_server_estaciones():
@@ -724,13 +740,8 @@ FROM T004Alertas WHERE T004transferido=0""")
    # Ejecutar una consulta SQL
         # Recuperar todos los resultados de la consulta
         data_parametros = cursor.fetchall()
-        print("data parametros ", data_parametros)
+        # print("data parametros ", data_parametros)
         for row in data_parametros:
-            print("row 0", row)
-            print("row 0", row[0])
-            print("row 1", row[1])
-            print("row 2", row[2])
-            print("row 3", row[3])
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
                 WHERE T004descripcion = %s
                 AND T004fecha = %s AND OBJECTID = %s""", (row[0], row[1], row[3]))
@@ -837,7 +848,7 @@ def transfer_data():
 
 
 schedule.every(1).minutes.do(transfer_data)
-# schedule.every(1).minutes.do(enviar_alertas)
+schedule.every(1).minutes.do(enviar_alertas)
 schedule.every(1).minutes.do(test_cronjob)
 
 
