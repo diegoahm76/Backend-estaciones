@@ -1046,7 +1046,7 @@ def transfer_data_alertas():
 
 
 schedule.every(5).minutes.do(transfer_data_datos)
-schedule.every(60).minutes.do(enviar_alertas)
+schedule.every(480).minutes.do(enviar_alertas)
 schedule.every(5).minutes.do(transfer_data_alertas)
 
 
