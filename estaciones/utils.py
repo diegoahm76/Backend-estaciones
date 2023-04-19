@@ -1044,9 +1044,8 @@ def transfer_data_alertas():
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 
-
+schedule.every(5).minutes.do(enviar_alertas)
 schedule.every(5).minutes.do(transfer_data_datos)
-schedule.every(30).minutes.do(enviar_alertas)
 schedule.every(5).minutes.do(transfer_data_alertas)
 
 
