@@ -1045,8 +1045,8 @@ def transfer_data_alertas():
         print(f"Ha ocurrido un error: {e}")
 
 
-schedule.every(5).minutes.do(transfer_data_datos)
-schedule.every(5).minutes.do(transfer_data_alertas)
+# schedule.every(5).minutes.do(transfer_data_datos)
+# schedule.every(5).minutes.do(transfer_data_alertas)
 schedule.every(5).minutes.do(enviar_alertas)
 
 while True:  # Ciclo principal del programa
