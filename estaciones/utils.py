@@ -1047,7 +1047,7 @@ def transfer_data_alertas():
 
 schedule.every(5).minutes.do(transfer_data_datos)
 schedule.every(5).minutes.do(transfer_data_alertas)
-#schedule.every(5).minutes.do(enviar_alertas)
+schedule.every(5).minutes.do(enviar_alertas)
 
 while True:  # Ciclo principal del programa
     schedule.run_pending()  # Ejecutar tareas pendientes en el horario programado
