@@ -28,7 +28,7 @@ DEBUG = True
 # envio de email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.outlook.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('BIA_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('BIA_EMAIL_HOST_PASSWORD')
