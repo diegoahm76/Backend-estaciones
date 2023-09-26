@@ -93,9 +93,9 @@ DATABASES = {
 }
 
 # configura los cronjobs
-CRONJOBS = [
-    ('*/1 * * * *', 'estaciones.cron.test_cronjob'),
-]
+# CRONJOBS = [
+#     ('*/1 * * * *', 'estaciones.cron.test_cronjob'),
+# ]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
