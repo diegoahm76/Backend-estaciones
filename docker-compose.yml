@@ -6,7 +6,7 @@ services: # the different images that will be running as containers
     #build the image for the web service from the dockerfile in parent directory.  
     build: . 
     # command directive passes the parameters to the service and they will be executed by the service. In this example, these are django commands which will be executed in the container where django lives.
-    command: sh -c "python manage.py runserver 0.0.0.0:3000" 
+    command: sh -c "python manage.py runserver 0.0.0.0:8001" 
     # map data and files from parent directory in host to microservice directory in docker container
     volumes: 
       - .:/backend-estaciones
@@ -17,5 +17,5 @@ services: # the different images that will be running as containers
     image: backend-estaciones-app 
     # expose the port to other services defined here so that they can access this service via the exposed port. In the case of Django, this is 8000 by default
     ports: 
-      - 3000:3000 # retrieved from the .env file
+      - 8001:8001 # retrieved from the .env file
     restart: "on-failure"
