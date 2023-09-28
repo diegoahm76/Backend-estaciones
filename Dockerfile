@@ -23,6 +23,6 @@ COPY . $DockerHOME
 # run this command to install all dependencies  
 RUN pip install -r requirements.txt  
 # port where the Django app runs  
-EXPOSE 8000  
+EXPOSE 3000  
 # start server
-CMD service cron start && python manage.py crontab add && python manage.py crontab show && python manage.py runserver
+CMD python manage.py runserver

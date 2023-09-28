@@ -29,6 +29,7 @@ def send_sms(phone, sms):
         }
 
         response = requests.request("POST", url, headers=headers, data=payload)
+        print(response.text)
 
 #Envio de whatsapp
 # def send_whatsapp_message(phone_numbers, message):
