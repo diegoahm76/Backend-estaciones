@@ -17,6 +17,7 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 RUN apt-get update
 RUN apt-get install -y cron
+RUN apt-get install -y iputils-ping
 
 # copy whole project to your docker home directory. 
 COPY . $DockerHOME  
@@ -24,5 +25,6 @@ COPY . $DockerHOME
 RUN pip install -r requirements.txt  
 # port where the Django app runs  
 EXPOSE 8001
+EXPOSE 1433
 # start server
 CMD python manage.py runserver
