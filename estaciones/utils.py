@@ -6,31 +6,43 @@ import os
 from estaciones.utlls_send import send_email, send_sms
 from estaciones.cron import test_cronjob
 import datetime
-
+# CARGAR VARIABLES DE ENTORNO
+from dotenv import load_dotenv
+load_dotenv()
 # Conexión a SQL Server
 
 
 def connect_to_sql_server():
-    connect = pymssql.connect(server=os.environ['MSSQL_DB_SERVER'],
-                              user=os.environ['MSSQL_DB_USER'],
-                              password=os.environ['MSSQL_DB_PASSWORD'],
-                              database=os.environ['MSSQL_DB_DATABASE'])
-    # cursor = connect.cursor()  # Crear un cursor para realizar consultas
-    # # Ejecutar una consulta SQL
-    # cursor.execute(
-    #     'SELECT T001fechaMod, T001nombre , T001coord1, T001coord2 FROM T001Estaciones WHERE T001transferido = 1')
-    # # Recuperar todos los resultados de la consulta
-    # datos_estacion = cursor.fetchall()
-    # print("DATOS_ESTACION: ", datos_estacion)
-    return connect
+    try:
+        connect = pymssql.connect(server=os.environ['MSSQL_DB_SERVER'],
+                                user=os.environ['MSSQL_DB_USER'],
+                                password=os.environ['MSSQL_DB_PASSWORD'],
+                                database=os.environ['MSSQL_DB_DATABASE'])
+        print(connect)
+        # cursor = connect.cursor()  # Crear un cursor para realizar consultas
+        # # Ejecutar una consulta SQL
+        # cursor.execute(
+        #     'SELECT T001fechaMod, T001nombre , T001coord1, T001coord2 FROM T001Estaciones WHERE T001transferido = 1')
+        # # Recuperar todos los resultados de la consulta
+        # datos_estacion = cursor.fetchall()
+        # print("DATOS_ESTACION: ", datos_estacion)
+        return connect
+    except Exception as e:
+        print(f"Error al conectar a la base de datos SQL Server: {e}")
+        return None
 
 # Conexión a PostgreSQL
 
-
 def conn_postgresq():
-    return psycopg2.connect(host=os.environ['BIA_ESTACIONES_HOST'], port=os.environ['BIA_ESTACIONES_PORT'],
-                            database=os.environ['BIA_ESTACIONES_NAME'], user=os.environ['BIA_ESTACIONES_USER'],
-                            password=os.environ['BIA_ESTACIONES_PASSWORD'])
+    try:
+        connection = psycopg2.connect(host=os.environ['BIA_ESTACIONES_HOST'], port=os.environ['BIA_ESTACIONES_PORT'],
+                                database=os.environ['BIA_ESTACIONES_NAME'], user=os.environ['BIA_ESTACIONES_USER'],
+                                password=os.environ['BIA_ESTACIONES_PASSWORD'])
+        print(connection)
+        return connection
+    except Exception as e:
+            print(f"Error al conectar a la base de datos PostgreSQL: {e}")
+            return None
 
 
 def insert_data_into_postgresql_historial(data_historial):
@@ -929,7 +941,7 @@ FROM T004Alertas WHERE T004transferido=0""")
    # Ejecutar una consulta SQL
         # Recuperar todos los resultados de la consulta
         data_parametros = cursor.fetchall()
-        # print("data parametros ", data_parametros)
+        print("data parametros ", data_parametros)
         for row in data_parametros:
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
                 WHERE T004descripcion = %s
@@ -1044,6 +1056,7 @@ def transfer_data_alertas():
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 
+# connect_to_sql_server()
 
 schedule.every(5).minutes.do(transfer_data_datos)
 schedule.every(5).minutes.do(transfer_data_alertas)
