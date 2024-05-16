@@ -1,12 +1,18 @@
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from backend_estaciones.settings import EMAIL_HOST_USER, AUTHENTICATION_360_NRS
+from django.template.loader import render_to_string
 import requests, json
 # from twilio.rest import Client
 
 
 def send_email(data):
-        email = EmailMessage(subject= data['email_subject'], body=data['template'], to=[data['to_email']], from_email=EMAIL_HOST_USER)
+        # AÑADIR EMAIL A CONTEXT
+        data['context']['email'] = data['to_email']
+
+        # RENDER HTML TEMPLATE
+        template = render_to_string(('envio-alerta.html'), data['context'])
         
+        email = EmailMultiAlternatives(subject= data['email_subject'], body=template, to=[data['to_email']], from_email=EMAIL_HOST_USER)
         email.content_subtype ='html'
         response = email.send(fail_silently=True)
         print(email)
