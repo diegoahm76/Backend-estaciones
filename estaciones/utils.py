@@ -106,18 +106,8 @@ def envio_alertas(data):
             if registro[1] < parametro_estacion[0][2]:
 
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[1]} °C '
-                # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de temperatura </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto = 'Alarma temperatura'
+                asunto = 'BIA - Alarma temperatura'
+                context = {'tipo_alerta': 'Alerta de temperatura', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
                     now = datetime.datetime.now()
@@ -136,22 +126,13 @@ def envio_alertas(data):
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta de temperatura \n La estacion {nombre_estacion} emitio la siguiente alerta: {mensaje_min}')
                     print("PERSONA: ", persona)
                     print("MSG: ", mensaje_min)
-                    data = {'template': f'{persona[1]} {persona[2]} {mensaje_html}',
-                            'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[1] > parametro_estacion[0][1]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[1]} °C'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de temperatura </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma temperatura'
+                context = {'tipo_alerta': 'Alerta de temperatura', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -168,8 +149,7 @@ def envio_alertas(data):
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta de temperatura \n La estacion {nombre_estacion} emitio la siguiente alerta:{mensaje_max}')
 
-                    data = {'template': mensaje_html_max,
-                            'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -186,18 +166,8 @@ def envio_alertas(data):
         if len(conf_alarma_tmp) > 0:
             if registro[2] < parametro_estacion[0][4]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[2]} %RH '
-                # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de humedad </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto = 'Alarma!!'
+                asunto = 'BIA - Alarma humedad'
+                context = {'tipo_alerta': 'Alerta de humedad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
                     now = datetime.datetime.now()
@@ -214,22 +184,13 @@ def envio_alertas(data):
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta de Humedad \n La estacion {nombre_estacion} emitio la siguiente alerta:\n{mensaje_min}')
-                    data = {'template': mensaje_html,
-                            'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[2] > parametro_estacion[0][3]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[2]} %RH'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de Humedad </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma humedad'
+                context = {'tipo_alerta': 'Alerta de humedad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -245,8 +206,7 @@ def envio_alertas(data):
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta de Humedad \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_html_max,
-                            'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -263,18 +223,8 @@ def envio_alertas(data):
         if len(conf_alarma_tmp) > 0:
             if registro[3] < parametro_estacion[0][6]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[3]}hPa '
-                # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de presión barometrica </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto = 'Alarma!!'
+                asunto = 'BIA - Alarma presión barometrica'
+                context = {'tipo_alerta': 'Alerta de presión barometrica', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
                     now = datetime.datetime.now()
@@ -293,22 +243,13 @@ def envio_alertas(data):
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta de presion hPa \n La estacion {nombre_estacion} emitio la siguiente alerta: \n{mensaje_min}')
                     # print("PERSONA: ", persona)
                     # print("MSG: ", mensaje_min)
-                    data = {'template': mensaje_html,
-                            'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[3] > parametro_estacion[0][5]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[2]} hPa'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de presión barometrica </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma presión barometrica'
+                context = {'tipo_alerta': 'Alerta de presión barometrica', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -324,8 +265,7 @@ def envio_alertas(data):
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta de presion barometrica \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_html_max,
-                            'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -342,18 +282,8 @@ def envio_alertas(data):
         if len(conf_alarma_tmp) > 0:
             if registro[4] < parametro_estacion[0][8]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[4]} m/s '
-            # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta Velocidad del viento </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto = 'Alarma!!'
+                asunto = 'BIA - Alarma velocidad del viento'
+                context = {'tipo_alerta': 'Alerta de velocidad del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
                     now = datetime.datetime.now()
@@ -370,22 +300,13 @@ def envio_alertas(data):
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta Velocidad del viento \n La estacion {nombre_estacion} emitio una alerta:\n{mensaje_min}')
-                    data = {'template': mensaje_html,
-                            'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[4] > parametro_estacion[0][7]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[4]} m/s'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta Velocidad del viento </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma velocidad del viento'
+                context = {'tipo_alerta': 'Alerta de velocidad del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -401,8 +322,7 @@ def envio_alertas(data):
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta Velocidad del viento \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_html_max,
-                            'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -419,18 +339,8 @@ def envio_alertas(data):
         if len(conf_alarma_tmp) > 0:
             if registro[5] < parametro_estacion[0][10]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[5]} ° '
-                # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de direeción del viento </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto = 'Alarma!!'
+                asunto = 'BIA - Alarma dirección del viento'
+                context = {'tipo_alerta': 'Alerta de dirección del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
                     now = datetime.datetime.now()
@@ -445,25 +355,16 @@ def envio_alertas(data):
                 
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(
-                        persona[4], f'{persona[1]} {persona[2]}\n Alerta direeción viento \n La estacion {nombre_estacion} envio una alerta:\n{mensaje_min}')
+                        persona[4], f'{persona[1]} {persona[2]}\n Alerta dirección viento \n La estacion {nombre_estacion} envio una alerta:\n{mensaje_min}')
                     # print("PERSONA: ", persona)
                     # print("MSG: ", mensaje_min)
-                    data = {'template': mensaje_html,
-                            'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[5] > parametro_estacion[0][9]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[5]} °'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de direeción del viento </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma dirección del viento'
+                context = {'tipo_alerta': 'Alerta de dirección del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -477,9 +378,8 @@ def envio_alertas(data):
                 
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(
-                        persona[4], f'{persona[1]} {persona[2]}\n Alerta direeción del viento \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_max,
-                            'email_subject': 'Alarma', 'to_email': persona[3]}
+                        persona[4], f'{persona[1]} {persona[2]}\n Alerta dirección del viento \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -495,18 +395,8 @@ def envio_alertas(data):
         if len(conf_alarma_tmp) > 0:
             if registro[6] < parametro_estacion[0][12]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[6]} mm'
-                # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de Precipitación </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto=  'Alarma!!'
+                asunto = 'BIA - Alarma precipitación'
+                context = {'tipo_alerta': 'Alerta de precipitación', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
                     send_sms(persona[4],f'{persona[1]} {persona[2]}\n Alerta de Precipitación \n La estacion {nombre_estacion} emitio la siguiente alerta:\n{mensaje_min}')
@@ -521,21 +411,13 @@ def envio_alertas(data):
                     data_historial = [fecha_actual, mensaje, correo, telefono, estacion, id_persona]
                 
                     insert_data_into_postgresql_historial(data_historial)
-                    data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[6] > parametro_estacion[0][11]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[6]} mm'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de Precipitación </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma precipitación'
+                context = {'tipo_alerta': 'Alerta de precipitación', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -549,7 +431,7 @@ def envio_alertas(data):
                 
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(persona[4], f'{persona[1]} {persona[2]}\n Alerta de Precipitación \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_html_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -565,18 +447,8 @@ def envio_alertas(data):
         if len(conf_alarma_tmp) > 0:
             if registro[7] < parametro_estacion[0][14]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[7]} '
-                #estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de Luminosidad </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto=  'Alarma!!'
+                asunto = 'BIA - Alarma luminosidad'
+                context = {'tipo_alerta': 'Alerta de luminosidad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
                     now = datetime.datetime.now()
@@ -591,21 +463,13 @@ def envio_alertas(data):
                 
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(persona[4],f'{persona[1]} {persona[2]}\n Alerta de Luminosidad \n La estacion {nombre_estacion} emitio la siguiente alerta:\n{mensaje_min}')
-                    data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[7] > parametro_estacion[0][13]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[7]} '
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de Luminosidad </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma luminosidad'
+                context = {'tipo_alerta': 'Alerta de luminosidad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -619,7 +483,7 @@ def envio_alertas(data):
                 
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(persona[4], f'{persona[1]} {persona[2]}\n Alerta de Luminosidad \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_html_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -635,18 +499,8 @@ def envio_alertas(data):
         if len(conf_alarma_tmp) > 0:
             if registro[9] < parametro_estacion[0][18]:
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[8]} m/s'
-                #estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de velocidad del agua </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto=  'Alarma!!'
+                asunto = 'BIA - Alarma velocidad del agua'
+                context = {'tipo_alerta': 'Alerta de velocidad del agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
                 print("Registro",registro[8])
 
                 for persona in personas:
@@ -662,21 +516,13 @@ def envio_alertas(data):
                 
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(persona[4],f'{persona[1]} {persona[2]}\n Alerta velocidad agua\n La estacion {nombre_estacion} envio una alerta:\n{mensaje_min}')
-                    data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
 
             elif registro[9] > parametro_estacion[0][17]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[8]} m/s'
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta velocidad del agua </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma velocidad del agua'
+                context = {'tipo_alerta': 'Alerta de velocidad del agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
                     now = datetime.datetime.now()
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -690,7 +536,7 @@ def envio_alertas(data):
                 
                     insert_data_into_postgresql_historial(data_historial)
                     send_sms(persona[4], f'{persona[1]} {persona[2]}\n Alerta velocidad del agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
-                    data = {'template': mensaje_html_max, 'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
             else:
                 # mensaje_no = conf_alarma_tmp[0][3]
@@ -709,19 +555,8 @@ def envio_alertas(data):
             if registro[8] < parametro_estacion[0][16]:
 
                 mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
-                print("Mensaje min", mensaje_min)
-                # estructura HTML para el mensaje
-                mensaje_html = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de nivel de agua </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_min} </p>
-                    </body>
-                </html>
-                """
-                Asunto = 'Alarma!!'
+                asunto = 'BIA - Alarma nivel de agua'
+                context = {'tipo_alerta': 'Alerta de nivel de agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
                 print("Paso Html min")
 
                 for persona in personas:
@@ -743,25 +578,14 @@ def envio_alertas(data):
 
                     # print("PERSONA: ", persona)
                     # print("MSG: ", mensaje_min)
-                    data = {'template': mensaje_html,
-                            'email_subject': Asunto, 'to_email': persona[3]}
-                    print("EMAIL: ", persona[3])
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
                     print("envio email min")
 
             elif registro[8] > parametro_estacion[0][15]:
                 mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
-                print("Mensaje max sms", mensaje_max)
-                mensaje_html_max = f"""
-                    <html>
-                    <head></head>
-                        <body>
-                            <h3>Alerta de nivel de agua </h3>
-                            <P>La estacion {nombre_estacion} emitio la siguiente alerta: </p>
-                            <p> {mensaje_max} </p>
-                    </body>
-                </html>
-                """
+                asunto = 'BIA - Alarma nivel de agua'
+                context = {'tipo_alerta': 'Alerta de nivel de agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 print("Paso Html max")
                 for persona in personas:
                     now = datetime.datetime.now()
@@ -779,8 +603,7 @@ def envio_alertas(data):
                     send_sms(
                         persona[4], f'{persona[1]} {persona[2]}\n Alerta nivel de agua \n La estacion {nombre_estacion} emitio la siguiente alerta:\n {mensaje_max}')
                     print("envio sms min")
-                    data = {'template': mensaje_html_max,
-                            'email_subject': 'Alarma', 'to_email': persona[3]}
+                    data = {'email_subject': asunto, 'to_email': persona[3], 'context': context}
                     send_email(data)
                     print("envio email max")
             else:
