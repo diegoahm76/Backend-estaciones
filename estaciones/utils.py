@@ -625,7 +625,7 @@ def envio_alertas(data):
 
         # VALIDAR SI GENERAR ALERTA vELOCIDAD DEL AGUA
         conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'VDA']
-        if registro[8] < parametro_estacion[0][18]:
+        if registro[9] < parametro_estacion[0][18]:
             mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[8]} m/s'
             #estructura HTML para el mensaje
             mensaje_html = f"""
@@ -657,7 +657,7 @@ def envio_alertas(data):
                 data = {'template': mensaje_html, 'email_subject': Asunto, 'to_email': persona[3]}
                 send_email(data)
 
-        elif registro[8] > parametro_estacion[0][17]:
+        elif registro[9] > parametro_estacion[0][17]:
             mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[8]} m/s'
             mensaje_html_max = f"""
                  <html>
@@ -697,7 +697,7 @@ def envio_alertas(data):
         conf_alarma_tmp = [
             alarma for alarma in resultado_conf_alarma if alarma[0] == 'NDA']
     if len(conf_alarma_tmp) > 0:
-        if registro[9] < parametro_estacion[0][16]:
+        if registro[8] < parametro_estacion[0][16]:
 
             mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
             print("Mensaje min", mensaje_min)
@@ -739,7 +739,7 @@ def envio_alertas(data):
                 send_email(data)
                 print("envio email min")
 
-        elif registro[9] > parametro_estacion[0][15]:
+        elif registro[8] > parametro_estacion[0][15]:
             mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
             print("Mensaje max sms", mensaje_max)
             mensaje_html_max = f"""
