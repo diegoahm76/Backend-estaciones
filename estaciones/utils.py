@@ -48,16 +48,16 @@ def conn_postgresq():
 def insert_data_into_postgresql_historial(data_historial):
     print("Entro a la conexion")
     try:
-        # Conectarse a la base de datos PostgreSQL
-        conn_postgresql = conn_postgresq()
-        cursor = conn_postgresql.cursor()
-        print("Conexión establecida con éxito.")
-        # Insertar varias filas en la tabla
-        cursor.execute('INSERT INTO "T907HistorialAlarmasEnviadas_PorEstacion" ("T907fechaHoraEnvio", "T907mensajeEnviado", "T907dirEmailEnviado", "T907nroCelularEnviado", "T907Id_Estacion", "T907Id_PersonaEstaciones") VALUES (%s,%s,%s,%s,%s,%s)', data_historial)
-        conn_postgresql.commit()  # Confirmar los cambios en la base de datos
-        cursor.close()  # Cerrar el cursor
-        conn_postgresql.close()  # Cerrar la conexión
-        print("Paso Auditoria")
+        # # Conectarse a la base de datos PostgreSQL
+        # conn_postgresql = conn_postgresq()
+        # cursor = conn_postgresql.cursor()
+        # print("Conexión establecida con éxito.")
+        # # Insertar varias filas en la tabla
+        # cursor.execute('INSERT INTO "T907HistorialAlarmasEnviadas_PorEstacion" ("T907fechaHoraEnvio", "T907mensajeEnviado", "T907dirEmailEnviado", "T907nroCelularEnviado", "T907Id_Estacion", "T907Id_PersonaEstaciones") VALUES (%s,%s,%s,%s,%s,%s)', data_historial)
+        # conn_postgresql.commit()  # Confirmar los cambios en la base de datos
+        # cursor.close()  # Cerrar el cursor
+        # conn_postgresql.close()  # Cerrar la conexión
+        # print("Paso Auditoria")
         pass
     except Exception as e:
         print(f"Ha ocurrido un error al insertar los datos de estaciones: {e}")
@@ -498,7 +498,7 @@ def envio_alertas(data):
         conf_alarma_tmp = [alarma for alarma in resultado_conf_alarma if alarma[0] == 'VDA']
         if len(conf_alarma_tmp) > 0:
             if registro[9] < parametro_estacion[0][18]:
-                mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[8]} m/s'
+                mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m/s'
                 asunto = 'BIA - Alarma velocidad del agua'
                 context = {'tipo_alerta': 'Alerta de velocidad del agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
                 print("Registro",registro[8])
@@ -520,7 +520,7 @@ def envio_alertas(data):
                     send_email(data)
 
             elif registro[9] > parametro_estacion[0][17]:
-                mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[8]} m/s'
+                mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m/s'
                 asunto = 'BIA - Alarma velocidad del agua'
                 context = {'tipo_alerta': 'Alerta de velocidad del agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
@@ -554,7 +554,7 @@ def envio_alertas(data):
             print("TOMO CONFIGURACION NIVEL AGUA")
             if registro[8] < parametro_estacion[0][16]:
 
-                mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[9]} m' if conf_alarma_tmp[0][2] else ''
+                mensaje_min = f'{conf_alarma_tmp[0][2]} {registro[8]} m' if conf_alarma_tmp[0][2] else ''
                 asunto = 'BIA - Alarma nivel de agua'
                 context = {'tipo_alerta': 'Alerta de nivel de agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
                 print("Paso Html min")
@@ -583,7 +583,7 @@ def envio_alertas(data):
                     print("envio email min")
 
             elif registro[8] > parametro_estacion[0][15]:
-                mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[9]} m' if conf_alarma_tmp[0][1] else ''
+                mensaje_max = f'{conf_alarma_tmp[0][1]} {registro[8]} m' if conf_alarma_tmp[0][1] else ''
                 asunto = 'BIA - Alarma nivel de agua'
                 context = {'tipo_alerta': 'Alerta de nivel de agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 print("Paso Html max")
