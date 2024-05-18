@@ -3,6 +3,7 @@ import time
 import pymssql  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
 import psycopg2  # importar el módulo psycopg2 para conectarse a la base de datos PostgreSQL
 import os
+import pytz
 from estaciones.utlls_send import send_email, send_sms
 from estaciones.cron import test_cronjob
 import datetime
@@ -110,7 +111,7 @@ def envio_alertas(data):
                 context = {'tipo_alerta': 'Alerta de temperatura', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -134,7 +135,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma temperatura'
                 context = {'tipo_alerta': 'Alerta de temperatura', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -170,7 +171,7 @@ def envio_alertas(data):
                 context = {'tipo_alerta': 'Alerta de humedad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -192,7 +193,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma humedad'
                 context = {'tipo_alerta': 'Alerta de humedad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -227,7 +228,7 @@ def envio_alertas(data):
                 context = {'tipo_alerta': 'Alerta de presión barometrica', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -251,7 +252,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma presión barometrica'
                 context = {'tipo_alerta': 'Alerta de presión barometrica', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -286,7 +287,7 @@ def envio_alertas(data):
                 context = {'tipo_alerta': 'Alerta de velocidad del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -308,7 +309,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma velocidad del viento'
                 context = {'tipo_alerta': 'Alerta de velocidad del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -343,7 +344,7 @@ def envio_alertas(data):
                 context = {'tipo_alerta': 'Alerta de dirección del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -366,7 +367,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma dirección del viento'
                 context = {'tipo_alerta': 'Alerta de dirección del viento', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -400,7 +401,7 @@ def envio_alertas(data):
 
                 for persona in personas:
                     send_sms(persona[4],f'{persona[1]} {persona[2]}\n Alerta de Precipitación \n La estacion {nombre_estacion} emitio la siguiente alerta:\n{mensaje_min}')
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -419,7 +420,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma precipitación'
                 context = {'tipo_alerta': 'Alerta de precipitación', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -451,7 +452,7 @@ def envio_alertas(data):
                 context = {'tipo_alerta': 'Alerta de luminosidad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_min}
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -471,7 +472,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma luminosidad'
                 context = {'tipo_alerta': 'Alerta de luminosidad', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -504,7 +505,7 @@ def envio_alertas(data):
                 print("Registro",registro[8])
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -524,7 +525,7 @@ def envio_alertas(data):
                 asunto = 'BIA - Alarma velocidad del agua'
                 context = {'tipo_alerta': 'Alerta de velocidad del agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3] # tipo de dato: string
                     telefono = persona[4] # tipo de dato: string
@@ -560,7 +561,7 @@ def envio_alertas(data):
                 print("Paso Html min")
 
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
@@ -588,7 +589,7 @@ def envio_alertas(data):
                 context = {'tipo_alerta': 'Alerta de nivel de agua', 'nombre_estacion': nombre_estacion, 'mensaje': mensaje_max}
                 print("Paso Html max")
                 for persona in personas:
-                    now = datetime.datetime.now()
+                    now = datetime.datetime.now(pytz.timezone('America/Bogota'))
                     fecha_actual = now.strftime("%Y-%m-%d %H:%M:%S")
                     correo = persona[3]  # tipo de dato: string
                     telefono = persona[4]  # tipo de dato: string
