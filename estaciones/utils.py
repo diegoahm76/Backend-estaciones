@@ -1,5 +1,6 @@
 import schedule
 import time
+import threading
 import pymssql  # importar el módulo pyodbc para conectarse a la base de datos SQL Server
 import psycopg2  # importar el módulo psycopg2 para conectarse a la base de datos PostgreSQL
 import os
@@ -49,16 +50,16 @@ def conn_postgresq():
 def insert_data_into_postgresql_historial(data_historial):
     print("Entro a la conexion")
     try:
-        # # Conectarse a la base de datos PostgreSQL
-        # conn_postgresql = conn_postgresq()
-        # cursor = conn_postgresql.cursor()
-        # print("Conexión establecida con éxito.")
-        # # Insertar varias filas en la tabla
-        # cursor.execute('INSERT INTO "T907HistorialAlarmasEnviadas_PorEstacion" ("T907fechaHoraEnvio", "T907mensajeEnviado", "T907dirEmailEnviado", "T907nroCelularEnviado", "T907Id_Estacion", "T907Id_PersonaEstaciones") VALUES (%s,%s,%s,%s,%s,%s)', data_historial)
-        # conn_postgresql.commit()  # Confirmar los cambios en la base de datos
-        # cursor.close()  # Cerrar el cursor
-        # conn_postgresql.close()  # Cerrar la conexión
-        # print("Paso Auditoria")
+        # Conectarse a la base de datos PostgreSQL
+        conn_postgresql = conn_postgresq()
+        cursor = conn_postgresql.cursor()
+        print("Conexión establecida con éxito.")
+        # Insertar varias filas en la tabla
+        cursor.execute('INSERT INTO "T907HistorialAlarmasEnviadas_PorEstacion" ("T907fechaHoraEnvio", "T907mensajeEnviado", "T907dirEmailEnviado", "T907nroCelularEnviado", "T907Id_Estacion", "T907Id_PersonaEstaciones") VALUES (%s,%s,%s,%s,%s,%s)', data_historial)
+        conn_postgresql.commit()  # Confirmar los cambios en la base de datos
+        cursor.close()  # Cerrar el cursor
+        conn_postgresql.close()  # Cerrar la conexión
+        print("Paso Auditoria")
         pass
     except Exception as e:
         print(f"Ha ocurrido un error al insertar los datos de estaciones: {e}")
@@ -670,10 +671,10 @@ def get_data_from_sql_server_datos():
         conn_sql_server = connect_to_sql_server()
         print("Conectado a SQL Server")
         cursor = conn_sql_server.cursor()  # Crear un cursor para realizar consultas
-        cursor.execute('SELECT TOP 500 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
+        cursor.execute('SELECT TOP 200 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         # Convertir data a una cadena de texto para evitar la concatenación con un valor nulo
-        print("Datos obtenidos:", str(data))
+        # print("Datos obtenidos:", str(data))
         # envio_alertas(data)
         print("Alertas enviadas")
         for row in data:  # Recorrer cada fila de los resultados
@@ -775,7 +776,7 @@ FROM T004Alertas WHERE T004transferido=0""")
    # Ejecutar una consulta SQL
         # Recuperar todos los resultados de la consulta
         data_parametros = cursor.fetchall()
-        print("data parametros ", data_parametros)
+        # print("data parametros ", data_parametros)
         for row in data_parametros:
             cursor.execute("""UPDATE T004Alertas SET T004transferido = 1
                 WHERE T004descripcion = %s
@@ -833,7 +834,7 @@ def enviar_alertas():
         cursor.execute('SELECT TOP 200 T002fecha, T002temperaturaAmbiente , T002humedadAmbiente, T002presionBarometrica, T002velocidadViento, T002direccionViento,T002precipitacion,T002luminocidad,T002nivelAgua,T002velocidadAgua,OBJECTID FROM T002Datos WHERE T002transferido = 0')  # Ejecutar una consulta SQL
         data = cursor.fetchall()  # Recuperar todos los resultados de la consulta
         # Convertir data a una cadena de texto para evitar la concatenación con un valor nulo
-        print("Datos obtenidos:", str(data))
+        # print("Datos obtenidos:", str(data))
         envio_alertas(data)
         conn_sql_server.commit()  # Confirmar los cambios en la base de datos
         print("Datos actualizados")
@@ -892,7 +893,15 @@ def transfer_data_alertas():
 
 # connect_to_sql_server()
 
-schedule.every(5).minutes.do(transfer_data_alertas)
+
+def run_threaded(job_func):
+    job_thread = threading.Thread(target=job_func)
+    job_thread.start()
+
+# Schedule the third task to run concurrently
+schedule.every(5).minutes.do(run_threaded, transfer_data_alertas)
+
+# Schedule the first two tasks sequentially
 schedule.every(5).minutes.do(enviar_alertas)
 schedule.every(5).minutes.do(transfer_data_datos)
 
