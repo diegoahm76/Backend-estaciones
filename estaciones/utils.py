@@ -893,6 +893,7 @@ def transfer_data_alertas():
 
 # connect_to_sql_server()
 
+
 def run_threaded(job_func):
     job_thread = threading.Thread(target=job_func)
     job_thread.start()
